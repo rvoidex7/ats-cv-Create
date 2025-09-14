@@ -1,6 +1,16 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { type CvData, type AtsAnalysisResult } from '../types';
 
+// GoogleGenAI instance'larını cache'le
+const geminiInstances = new Map<string, GoogleGenAI>();
+
+const getGeminiInstance = (apiKey: string): GoogleGenAI => {
+    if (!geminiInstances.has(apiKey)) {
+        geminiInstances.set(apiKey, new GoogleGenAI({ apiKey }));
+    }
+    return geminiInstances.get(apiKey)!;
+};
+
 const handleApiError = (error: any): string => {
     console.error("Gemini API Error:", error);
     if (error.toString().includes('API key not valid')) {
@@ -15,7 +25,7 @@ export const generateWithGemini = async (apiKey: string, prompt: string): Promis
     }
     
     try {
-        const ai = new GoogleGenAI({ apiKey });
+        const ai = getGeminiInstance(apiKey);
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
@@ -95,7 +105,7 @@ export const analyzeCvWithGemini = async (apiKey: string, cvData: CvData, jobDes
     `;
 
     try {
-        const ai = new GoogleGenAI({ apiKey });
+        const ai = getGeminiInstance(apiKey);
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
