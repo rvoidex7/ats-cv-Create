@@ -1,18 +1,14 @@
+
+
+# Yeni Eklenen özellikler:
+- Tema iyileştirmesi
+- İndirme ve yazdırma butonları (burada hala problem var çözülmeyi bekleyen)
+- ATS analiz özelliği: İş ilanını atın ilana göre cv ne kadar tutarlı analizi sunar
+- Api key olmamasından kaynaklanan hatalar barizce kullanıcıya bildiirliyor ve arayüzden kolayca ekleyebilir hale geldi
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+<img width="1368" height="855" alt="image" src="https://github.com/user-attachments/assets/267aca02-64ee-4230-9929-f22441ca1a06" />
+<img width="601" height="772" alt="image" src="https://github.com/user-attachments/assets/1f0e3898-61ff-43fd-96f4-f5a74ebbdbc4" />
 </div>
-
-# Run and deploy your AI Studio app
-
-This contains everything you need to run your app locally.
-
-View your app in AI Studio: https://ai.studio/apps/drive/1QbcasdKa4zLXa3QzVQI7vrwD4v6XbqgW
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
 1. Install dependencies:
    `npm install`
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
