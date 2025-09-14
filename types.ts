@@ -39,3 +39,11 @@ export interface CvData {
 }
 
 export type CvSection = 'experience' | 'education' | 'skills';
+
+export interface AtsAnalysisResult {
+  matchScore: number;
+  summary: string;
+  matchingKeywords: string[];
+  missingKeywords: string[];
+  actionableFeedback: string[];
+}

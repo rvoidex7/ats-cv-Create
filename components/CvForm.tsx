@@ -126,7 +126,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
       <Section title="Yetenekler">
         <div className="flex flex-wrap gap-2">
             {cvData.skills.map(skill => (
-                <div key={skill.id} className="flex items-center bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                <div key={skill.id} className="flex items-center bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full">
                     <input 
                         type="text" 
                         value={skill.name} 
@@ -134,7 +134,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
                         className="bg-transparent focus:outline-none w-auto"
                         style={{minWidth: `${skill.name.length + 2}ch`}}
                     />
-                    <button onClick={() => onRemoveEntry('skills', skill.id)} className="ml-2 text-blue-600 hover:text-blue-800">
+                    <button onClick={() => onRemoveEntry('skills', skill.id)} className="ml-2 text-blue-500 hover:text-blue-700">
                         &times;
                     </button>
                 </div>

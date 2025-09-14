@@ -1,0 +1,156 @@
+
+import React, { useState } from 'react';
+import { analyzeCvWithGemini } from '../services/geminiService';
+import { type CvData, type AtsAnalysisResult } from '../types';
+import { MagicIcon } from './IconComponents';
+
+interface AtsAnalysisModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  cvData: CvData;
+}
+
+const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cvData }) => {
+  const [jobDescription, setJobDescription] = useState('');
+  const [analysisResult, setAnalysisResult] = useState<AtsAnalysisResult | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleAnalyze = async () => {
+    if (!jobDescription.trim()) {
+      setError('Lütfen analiz için bir iş ilanı yapıştırın.');
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    setAnalysisResult(null);
+    try {
+      const result = await analyzeCvWithGemini(cvData, jobDescription);
+      setAnalysisResult(result);
+    } catch (err) {
+      setError('Analiz sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    // Reset state on close
+    setAnalysisResult(null);
+    setError(null);
+    setIsLoading(false);
+    onClose();
+  }
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 transition-opacity duration-300" aria-modal="true" role="dialog" onClick={handleClose}>
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+        <header className="p-4 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+          <h2 className="text-xl font-bold text-gray-800">ATS Uyumluluk Analizi</h2>
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-800 text-2xl font-light">&times;</button>
+        </header>
+        
+        <main className="p-6 overflow-y-auto">
+          {!analysisResult ? (
+            <div>
+              <label htmlFor="job-desc" className="block text-sm font-medium text-gray-600 mb-2">İş İlanı</label>
+              <p className="text-gray-600 mb-4 text-sm">CV'nizin başvurduğunuz pozisyona ne kadar uygun olduğunu görmek için aşağıdaki alana iş ilanını yapıştırın ve analizi başlatın.</p>
+              <textarea
+                id="job-desc"
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+                placeholder="İş ilanını buraya yapıştırın..."
+                rows={10}
+                className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isLoading}
+                aria-label="İş İlanı Metin Alanı"
+              />
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+            </div>
+          ) : (
+            <div className="space-y-6 animate-fade-in">
+              <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="relative w-24 h-24 flex-shrink-0">
+                  <svg className="w-full h-full" viewBox="0 0 36 36">
+                    <path className="text-gray-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3.5" />
+                    <path className="text-blue-600 transition-all duration-1000 ease-out"
+                      strokeDasharray={`${analysisResult.matchScore}, 100`}
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" transform="rotate(-90 18 18)"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-blue-800">
+                    %{analysisResult.matchScore}
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-800 text-center sm:text-left">Genel Uyumluluk Skoru</h3>
+                  <p className="text-gray-600 mt-1 text-center sm:text-left">{analysisResult.summary}</p>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-bold text-gray-700 mb-2">İyileştirme Önerileri</h4>
+                <ul className="list-disc list-inside space-y-2 text-gray-600 bg-gray-50 p-4 rounded-md border">
+                  {analysisResult.actionableFeedback.map((item, index) => <li key={index}>{item}</li>)}
+                </ul>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-bold text-green-700 mb-2">Eşleşen Anahtar Kelimeler</h4>
+                  <div className="flex flex-wrap gap-2 p-3 bg-green-50 rounded-md border border-green-200">
+                    {analysisResult.matchingKeywords.map((keyword) => (
+                      <span key={keyword} className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{keyword}</span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-bold text-red-700 mb-2">Eksik Anahtar Kelimeler</h4>
+                  <div className="flex flex-wrap gap-2 p-3 bg-red-50 rounded-md border border-red-200">
+                    {analysisResult.missingKeywords.map((keyword) => (
+                      <span key={keyword} className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{keyword}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+        
+        <footer className="p-4 border-t flex flex-col sm:flex-row justify-end items-center space-y-2 sm:space-y-0 sm:space-x-4 sticky bottom-0 bg-white z-10">
+          {analysisResult ? (
+             <button
+                onClick={() => { setAnalysisResult(null); setError(null); }}
+                className="w-full sm:w-auto bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+            >
+                Yeni Analiz Yap
+            </button>
+          ) : (
+            <button
+              onClick={handleAnalyze}
+              disabled={isLoading || !jobDescription}
+              className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
+            >
+              {isLoading ? (
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <MagicIcon />
+              )}
+              <span>{isLoading ? 'Analiz Ediliyor...' : 'Analizi Başlat'}</span>
+            </button>
+          )}
+           <button onClick={handleClose} className="w-full sm:w-auto bg-white border border-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">Kapat</button>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+export default AtsAnalysisModal;
