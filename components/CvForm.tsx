@@ -14,29 +14,29 @@ interface CvFormProps {
 }
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
-    <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">{title}</h2>
+  <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4 border-b dark:border-gray-600 pb-2">{title}</h2>
     {children}
   </div>
 );
 
 const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement> & { label: string }> = ({ label, ...props }) => (
   <div className="mb-4">
-    <label className="block text-sm font-medium text-gray-600 mb-1">{label}</label>
+    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{label}</label>
     <input
       {...props}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
     />
   </div>
 );
 
 const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }> = ({ label, ...props }) => (
   <div className="mb-4">
-    <label className="block text-sm font-medium text-gray-600 mb-1">{label}</label>
+    <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{label}</label>
     <textarea
       {...props}
       rows={5}
-      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
     />
   </div>
 );
@@ -77,8 +77,8 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
 
       <Section title="İş Deneyimi">
         {cvData.experience.map((exp, index) => (
-          <div key={exp.id} className="p-4 border rounded-md mb-4 relative bg-gray-50">
-            <button onClick={() => onRemoveEntry('experience', exp.id)} className="absolute top-2 right-2 text-gray-400 hover:text-red-500">
+          <div key={exp.id} className="p-4 border dark:border-gray-700 rounded-md mb-4 relative bg-gray-50 dark:bg-gray-800/50">
+            <button onClick={() => onRemoveEntry('experience', exp.id)} className="absolute top-2 right-2 text-gray-400 dark:text-gray-500 hover:text-red-500">
               <DeleteIcon />
             </button>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -97,7 +97,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
             </div>
           </div>
         ))}
-        <button onClick={() => onAddEntry('experience')} className="flex items-center space-x-2 text-blue-600 font-semibold hover:text-blue-800">
+        <button onClick={() => onAddEntry('experience')} className="flex items-center space-x-2 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300">
           <AddIcon />
           <span>Deneyim Ekle</span>
         </button>
@@ -105,8 +105,8 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
 
       <Section title="Eğitim">
         {cvData.education.map((edu, index) => (
-          <div key={edu.id} className="p-4 border rounded-md mb-4 relative bg-gray-50">
-            <button onClick={() => onRemoveEntry('education', edu.id)} className="absolute top-2 right-2 text-gray-400 hover:text-red-500">
+          <div key={edu.id} className="p-4 border dark:border-gray-700 rounded-md mb-4 relative bg-gray-50 dark:bg-gray-800/50">
+            <button onClick={() => onRemoveEntry('education', edu.id)} className="absolute top-2 right-2 text-gray-400 dark:text-gray-500 hover:text-red-500">
               <DeleteIcon />
             </button>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -117,7 +117,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
             </div>
           </div>
         ))}
-        <button onClick={() => onAddEntry('education')} className="flex items-center space-x-2 text-blue-600 font-semibold hover:text-blue-800">
+        <button onClick={() => onAddEntry('education')} className="flex items-center space-x-2 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300">
           <AddIcon />
           <span>Eğitim Ekle</span>
         </button>
@@ -126,7 +126,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
       <Section title="Yetenekler">
         <div className="flex flex-wrap gap-2">
             {cvData.skills.map(skill => (
-                <div key={skill.id} className="flex items-center bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full">
+                <div key={skill.id} className="flex items-center bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-sm font-medium px-3 py-1 rounded-full">
                     <input 
                         type="text" 
                         value={skill.name} 
@@ -134,13 +134,13 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
                         className="bg-transparent focus:outline-none w-auto"
                         style={{minWidth: `${skill.name.length + 2}ch`}}
                     />
-                    <button onClick={() => onRemoveEntry('skills', skill.id)} className="ml-2 text-blue-500 hover:text-blue-700">
+                    <button onClick={() => onRemoveEntry('skills', skill.id)} className="ml-2 text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300">
                         &times;
                     </button>
                 </div>
             ))}
         </div>
-        <button onClick={() => onAddEntry('skills')} className="mt-4 flex items-center space-x-2 text-blue-600 font-semibold hover:text-blue-800">
+        <button onClick={() => onAddEntry('skills')} className="mt-4 flex items-center space-x-2 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300">
           <AddIcon />
           <span>Yetenek Ekle</span>
         </button>
