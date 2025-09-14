@@ -11,19 +11,70 @@ interface GeminiEnhancerProps {
     jobTitle?: string;
     company?: string;
   };
+  currentText?: string;
   onGeneratedText: (text: string) => void;
 }
 
-const GeminiEnhancer: React.FC<GeminiEnhancerProps> = ({ promptType, context, onGeneratedText }) => {
+const GeminiEnhancer: React.FC<GeminiEnhancerProps> = ({ promptType, context, currentText, onGeneratedText }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { apiKey, setError } = useContext(AppContext);
 
   const generatePrompt = () => {
     if (promptType === 'summary') {
-      return `ATS uyumlu bir CV için, "${context.jobTitle}" pozisyonunda deneyimli bir profesyonel için 2-3 cümlelik etkileyici bir profesyonel özet yaz. Özet, anahtar yetenekleri ve kariyer hedeflerini vurgulamalıdır. Sadece özet metnini döndür.`;
+      if (currentText && currentText.trim()) {
+        return `Aşağıdaki CV özetini daha profesyonel, ATS uyumlu ve etkileyici hale getir. Mevcut içeriği koruyarak dil bilgisi, akıcılık ve profesyonellik açısından iyileştir. 
+
+ÖNEMLİ FORMAT KURALLARI:
+- Sadece düz metin formatında yanıt ver
+- Hiçbir markdown işareti (**, *, _, vb.) kullanma
+- Paragraflar arasında boş satır bırak
+- Liste öğeleri için "-" işareti kullan
+- Her liste öğesini yeni satıra yaz
+- Alt başlıkları ayrı paragraflarda yaz
+- Orijinal yapıyı ve formatı koru
+
+Mevcut özet:
+"${currentText}"
+
+Sadece iyileştirilmiş özet metnini döndür, paragraf boşluklarını ve liste formatını koru.`;
+      } else {
+        return `ATS uyumlu bir CV için, "${context.jobTitle}" pozisyonunda deneyimli bir profesyonel için profesyonel bir özet yaz. Özet, anahtar yetenekleri ve kariyer hedeflerini vurgulamalıdır. 
+
+ÖNEMLİ: Sadece düz metin formatında yanıt ver. Hiçbir markdown işareti kullanma. Paragraflar arasında boş satır bırak.
+
+Sadece özet metnini döndür.`;
+      }
     }
     if (promptType === 'experience') {
-      return `ATS uyumlu bir CV için, "${context.company}" şirketinde "${context.jobTitle}" pozisyonu için sorumlulukları ve başarıları anlatan 3-4 maddelik bir liste oluştur. Her madde aksiyon fiili ile başlamalı ve ölçülebilir sonuçlar içermelidir. Sadece liste maddelerini, her biri '-' ile başlayacak şekilde döndür.`;
+      if (currentText && currentText.trim()) {
+        return `Aşağıdaki iş deneyimi açıklamasını daha profesyonel, ATS uyumlu ve etkileyici hale getir. Aksiyon fiilleri kullan, ölçülebilir sonuçlar ekle ve başarıları vurgula.
+
+ÖNEMLİ FORMAT KURALLARI:
+- Sadece düz metin formatında yanıt ver
+- Hiçbir markdown işareti kullanma
+- KISA VE ÖZ tut (maksimum 3-4 madde)
+- Her madde tek satırda olsun, çok uzun yazma
+- Liste öğeleri için "-" işareti kullan
+- Her liste öğesini yeni satıra yaz
+- Orijinal liste formatını koru ama daha kısa yap
+
+Mevcut açıklama:
+"${currentText}"
+
+Sadece iyileştirilmiş ve KISA açıklama metnini döndür, her maddeyi tek satırda tut.`;
+      } else {
+        return `ATS uyumlu bir CV için, "${context.company}" şirketinde "${context.jobTitle}" pozisyonu için sorumlulukları ve başarıları anlatan KISA ve ÖZ bir liste oluştur. 
+
+ÖNEMLİ KURALLAR:
+- Sadece düz metin formatında yanıt ver
+- Maksimum 3-4 madde yaz
+- Her madde tek satırda olsun, kısa ve öz
+- Her maddeyi "-" ile başlat
+- Aksiyon fiili ile başla
+- Ölçülebilir sonuçlar ekle
+
+Sadece kısa liste maddelerini döndür.`;
+      }
     }
     return '';
   };
@@ -45,7 +96,16 @@ const GeminiEnhancer: React.FC<GeminiEnhancerProps> = ({ promptType, context, on
 
     try {
       const result = await generateWithGemini(apiKey, prompt);
-      onGeneratedText(result);
+      // Markdown işaretlerini temizle
+      const cleanedResult = result
+        .replace(/\*\*(.*?)\*\*/g, '$1') // **bold** -> bold
+        .replace(/\*(.*?)\*/g, '$1')     // *italic* -> italic
+        .replace(/_(.*?)_/g, '$1')       // _underline_ -> underline
+        .replace(/`(.*?)`/g, '$1')       // `code` -> code
+        .replace(/#{1,6}\s/g, '')        // # başlıkları temizle
+        .trim();
+      
+      onGeneratedText(cleanedResult);
     } catch (err) {
       const errorMessage = (err as Error).message;
       setError(errorMessage);

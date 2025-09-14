@@ -9,10 +9,68 @@ interface CvPreviewProps {
 const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
   const { personalInfo, summary, experience, education, skills } = cvData;
 
-  const formatDescription = (text: string) => {
-    return text.split('\n').map((line, index) => (
-      <p key={index} className="text-sm text-gray-700">{line}</p>
-    ));
+  const formatSummary = (text: string) => {
+    if (!text) return null;
+    
+    const lines = text.split('\n');
+    const elements: JSX.Element[] = [];
+    let currentParagraph: string[] = [];
+    
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      
+      // Boş satır - paragraf sonu
+      if (trimmedLine === '') {
+        if (currentParagraph.length > 0) {
+          elements.push(
+            <p key={`p-${elements.length}`} className="text-sm text-gray-700 mb-3">
+              {currentParagraph.join(' ')}
+            </p>
+          );
+          currentParagraph = [];
+        }
+        return;
+      }
+      
+      // Liste işaretleri (-, *, •, ◦, ▪, ▫)
+      const listMarkers = /^[\-\*\•\◦\▪\▫]\s+(.+)$/;
+      const numberedList = /^\d+[\.\)]\s+(.+)$/;
+      
+      if (listMarkers.test(trimmedLine) || numberedList.test(trimmedLine)) {
+        // Önceki paragrafı bitir
+        if (currentParagraph.length > 0) {
+          elements.push(
+            <p key={`p-${elements.length}`} className="text-sm text-gray-700 mb-3">
+              {currentParagraph.join(' ')}
+            </p>
+          );
+          currentParagraph = [];
+        }
+        
+        // Liste öğesi ekle
+        const content = trimmedLine.replace(listMarkers, '$1').replace(numberedList, '$1');
+        elements.push(
+          <div key={`li-${elements.length}`} className="flex items-start mb-1">
+            <span className="text-blue-600 mr-2 mt-0.5 text-sm">•</span>
+            <span className="text-sm text-gray-700">{content}</span>
+          </div>
+        );
+      } else {
+        // Normal metin - paragrafın devamı
+        currentParagraph.push(trimmedLine);
+      }
+    });
+    
+    // Son paragrafı ekle
+    if (currentParagraph.length > 0) {
+      elements.push(
+        <p key={`p-${elements.length}`} className="text-sm text-gray-700 mb-3">
+          {currentParagraph.join(' ')}
+        </p>
+      );
+    }
+    
+    return elements.length > 0 ? elements : <p className="text-sm text-gray-700">{text}</p>;
   };
 
   return (
@@ -40,7 +98,9 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
 
         <section className="mb-6">
           <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">Özet</h2>
-          <p className="text-sm text-gray-700">{summary}</p>
+          <div className="summary-content">
+            {formatSummary(summary)}
+          </div>
         </section>
 
         <section className="mb-6">
@@ -52,8 +112,8 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
                 <p className="text-sm font-medium text-gray-600">{exp.startDate} - {exp.endDate}</p>
               </div>
               <p className="text-md font-medium text-gray-600 italic">{exp.company}</p>
-              <div className="mt-1 list-disc list-inside space-y-1">
-                {formatDescription(exp.description)}
+              <div className="mt-1 experience-description">
+                {formatSummary(exp.description)}
               </div>
             </div>
           ))}
