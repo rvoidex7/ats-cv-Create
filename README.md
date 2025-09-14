@@ -5,10 +5,15 @@
 - İndirme ve yazdırma butonları (burada hala problem var çözülmeyi bekleyen)
 - ATS analiz özelliği: İş ilanını atın ilana göre cv ne kadar tutarlı analizi sunar
 - Api key olmamasından kaynaklanan hatalar barizce kullanıcıya bildiirliyor ve arayüzden kolayca ekleyebilir hale geldi
+- CV verilerini JSON olarak dışa/içe aktarma özellikleri
+- PDF dosya adlarında Türkçe karakter düzeltmesi
+- İş deneyimi açıklamaları için kısa ve öz prompt'lar
+- localStorage ile otomatik veri kaydetme ve geri yükleme
+- Gemini AI'ın mevcut metni iyileştirmesi (sıfırdan yazmak yerine)
+ve diğer bazı ufak geliştirmeler...
 ------
 # Yapılacaklar listesi:
-- Mevcut kod, kullanıcının girdiği API anahtarını kullanmıyor, bunun yerine çalışmayacak olan process.env.API_KEY'e başvurmaya çalışıyor. Bu, uygulamanın AI özelliklerinin bozuk olduğu anlamına gelir.
-Ek olarak, her API çağrısında GoogleGenAI nesnesi yeniden oluşturuluyor. Bu, verimsiz bir yöntemdir.
+- Fotoğraf ekleme
 - Kişisel veri mahremiyetinin arttırılmasına yönelik eklemeler.
 - Yerel LLM entegrasyonu
 <div align="center">
