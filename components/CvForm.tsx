@@ -70,6 +70,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
            <GeminiEnhancer
               promptType="summary"
               context={{ jobTitle: cvData.experience[0]?.jobTitle || 'profesyonel' }}
+              currentText={cvData.summary}
               onGeneratedText={handleSummaryUpdate}
             />
         </div>
@@ -92,6 +93,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
               <GeminiEnhancer
                 promptType="experience"
                 context={{ jobTitle: exp.jobTitle, company: exp.company }}
+                currentText={exp.description}
                 onGeneratedText={(text) => handleExperienceDescriptionUpdate(exp.id, text)}
             />
             </div>
