@@ -1,8 +1,8 @@
-
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { analyzeCvWithGemini } from '../services/geminiService';
 import { type CvData, type AtsAnalysisResult } from '../types';
 import { MagicIcon } from './IconComponents';
+import { AppContext } from '../context/AppContext';
 
 interface AtsAnalysisModalProps {
   isOpen: boolean;
@@ -14,9 +14,15 @@ const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cv
   const [jobDescription, setJobDescription] = useState('');
   const [analysisResult, setAnalysisResult] = useState<AtsAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  
+  const { apiKey, error, setError } = useContext(AppContext);
 
   const handleAnalyze = async () => {
+    if (!apiKey) {
+      setError('Bu özelliği kullanmak için lütfen API anahtarınızı girin.');
+      return;
+    }
+
     if (!jobDescription.trim()) {
       setError('Lütfen analiz için bir iş ilanı yapıştırın.');
       return;
@@ -25,10 +31,11 @@ const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cv
     setError(null);
     setAnalysisResult(null);
     try {
-      const result = await analyzeCvWithGemini(cvData, jobDescription);
+      const result = await analyzeCvWithGemini(apiKey, cvData, jobDescription);
       setAnalysisResult(result);
     } catch (err) {
-      setError('Analiz sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+      const errorMessage = (err as Error).message;
+      setError(errorMessage);
       console.error(err);
     } finally {
       setIsLoading(false);

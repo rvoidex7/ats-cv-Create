@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import CvForm from './components/CvForm';
 import CvPreview from './components/CvPreview';
 import { useCvData } from './hooks/useCvData';
-import { DownloadIcon, BrandIcon, AnalysisIcon, PrintIcon } from './components/IconComponents';
+import { DownloadIcon, BrandIcon, AnalysisIcon, PrintIcon, KeyIcon } from './components/IconComponents';
 import AtsAnalysisModal from './components/AtsAnalysisModal';
+import ApiKeyModal from './components/ApiKeyModal';
+import ErrorToast from './components/ErrorToast';
+
 
 declare global {
   interface Window {
@@ -14,6 +17,7 @@ declare global {
 const App: React.FC = () => {
   const { cvData, setCvData, updateField, addEntry, removeEntry, updateEntry } = useCvData();
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
+  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
 
   const handlePrint = () => {
     window.print();
@@ -29,11 +33,8 @@ const App: React.FC = () => {
     const sanitizedName = cvData.personalInfo.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'cv';
     const fileName = `CV_${sanitizedName}.pdf`;
 
-    // Create a clone of the element to avoid altering the displayed version.
     const clone = element.cloneNode(true) as HTMLElement;
 
-    // Create a container that will be used to render the clone off-screen
-    // with styles optimized for PDF generation.
     const container = document.createElement('div');
     container.classList.add('cv-pdf-render-container');
     container.appendChild(clone);
@@ -47,7 +48,6 @@ const App: React.FC = () => {
       jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     
-    // Generate the PDF from the cloned element and clean up afterward.
     window.html2pdf().from(clone).set(opt).save().finally(() => {
         document.body.removeChild(container);
     });
@@ -67,6 +67,14 @@ const App: React.FC = () => {
               <span className="bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">BETA</span>
             </div>
             <div className="flex items-center space-x-2">
+               <button
+                  onClick={() => setIsApiKeyModalOpen(true)}
+                  className="flex items-center space-x-2 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 font-semibold px-4 py-2 rounded-lg shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors duration-200"
+                  title="API Anahtarını Ayarla"
+                >
+                  <KeyIcon />
+                  <span className="hidden sm:inline">API Anahtarı</span>
+                </button>
                <button
                   onClick={() => setIsAtsModalOpen(true)}
                   className="flex items-center space-x-2 bg-white text-blue-600 border border-blue-600 dark:bg-gray-700 dark:text-blue-400 dark:border-blue-400 font-semibold px-4 py-2 rounded-lg shadow-sm hover:bg-blue-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
@@ -119,6 +127,11 @@ const App: React.FC = () => {
         onClose={() => setIsAtsModalOpen(false)}
         cvData={cvData}
       />
+      <ApiKeyModal
+        isOpen={isApiKeyModalOpen}
+        onClose={() => setIsApiKeyModalOpen(false)}
+      />
+      <ErrorToast />
     </>
   );
 };

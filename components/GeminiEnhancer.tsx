@@ -1,7 +1,7 @@
-
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { generateWithGemini } from '../services/geminiService';
 import { MagicIcon } from './IconComponents';
+import { AppContext } from '../context/AppContext';
 
 type PromptType = 'summary' | 'experience';
 
@@ -16,7 +16,7 @@ interface GeminiEnhancerProps {
 
 const GeminiEnhancer: React.FC<GeminiEnhancerProps> = ({ promptType, context, onGeneratedText }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { apiKey, setError } = useContext(AppContext);
 
   const generatePrompt = () => {
     if (promptType === 'summary') {
@@ -29,6 +29,11 @@ const GeminiEnhancer: React.FC<GeminiEnhancerProps> = ({ promptType, context, on
   };
 
   const handleClick = async () => {
+    if (!apiKey) {
+      setError('Bu özelliği kullanmak için lütfen API anahtarınızı girin.');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     const prompt = generatePrompt();
@@ -39,10 +44,11 @@ const GeminiEnhancer: React.FC<GeminiEnhancerProps> = ({ promptType, context, on
     }
 
     try {
-      const result = await generateWithGemini(prompt);
+      const result = await generateWithGemini(apiKey, prompt);
       onGeneratedText(result);
     } catch (err) {
-      setError('İçerik üretilirken bir hata oluştu. Lütfen tekrar deneyin.');
+      const errorMessage = (err as Error).message;
+      setError(errorMessage);
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -66,7 +72,6 @@ const GeminiEnhancer: React.FC<GeminiEnhancerProps> = ({ promptType, context, on
           <MagicIcon />
         )}
       </button>
-      {error && <p className="text-xs text-red-500 dark:text-red-400 mt-1">{error}</p>}
     </div>
   );
 };

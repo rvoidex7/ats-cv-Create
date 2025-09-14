@@ -1,21 +1,21 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { type CvData, type AtsAnalysisResult } from '../types';
 
-// Ensure the API key is available. In a real app, this should be handled securely.
-const apiKey = process.env.API_KEY;
-if (!apiKey) {
-    console.error("API_KEY environment variable not set.");
-}
-
-const ai = new GoogleGenAI({ apiKey: apiKey! });
-
-export const generateWithGemini = async (prompt: string): Promise<string> => {
-    if (!apiKey) {
-        return "API Anahtarı bulunamadı. Lütfen ortam değişkenlerini kontrol edin.";
+const handleApiError = (error: any): string => {
+    console.error("Gemini API Error:", error);
+    if (error.toString().includes('API key not valid')) {
+        return "Sağlanan API Anahtarı geçersiz. Lütfen kontrol edin.";
     }
+    return "Gemini API ile iletişim kurulamadı. Lütfen daha sonra tekrar deneyin.";
+};
 
+export const generateWithGemini = async (apiKey: string, prompt: string): Promise<string> => {
+    if (!apiKey) {
+        throw new Error("API Anahtarı bulunamadı.");
+    }
+    
     try {
+        const ai = new GoogleGenAI({ apiKey });
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
@@ -30,8 +30,7 @@ export const generateWithGemini = async (prompt: string): Promise<string> => {
         return text.trim();
 
     } catch (error) {
-        console.error("Gemini API Error:", error);
-        throw new Error("Gemini API ile iletişim kurulamadı.");
+        throw new Error(handleApiError(error));
     }
 };
 
@@ -60,9 +59,9 @@ const analysisSchema = {
 };
 
 
-export const analyzeCvWithGemini = async (cvData: CvData, jobDescription: string): Promise<AtsAnalysisResult> => {
+export const analyzeCvWithGemini = async (apiKey: string, cvData: CvData, jobDescription: string): Promise<AtsAnalysisResult> => {
     if (!apiKey) {
-        throw new Error("API Anahtarı bulunamadı. Lütfen ortam değişkenlerini kontrol edin.");
+        throw new Error("API Anahtarı bulunamadı.");
     }
 
     const cvDataString = JSON.stringify({
@@ -96,6 +95,7 @@ export const analyzeCvWithGemini = async (cvData: CvData, jobDescription: string
     `;
 
     try {
+        const ai = new GoogleGenAI({ apiKey });
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
@@ -109,7 +109,6 @@ export const analyzeCvWithGemini = async (cvData: CvData, jobDescription: string
         const result = JSON.parse(jsonString);
         return result as AtsAnalysisResult;
     } catch (error) {
-        console.error("Gemini API Error during analysis:", error);
-        throw new Error("ATS Analizi sırasında Gemini API ile iletişim kurulamadı.");
+       throw new Error(handleApiError(error));
     }
 };
