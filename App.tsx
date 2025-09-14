@@ -1,10 +1,15 @@
-
 import React, { useState } from 'react';
 import CvForm from './components/CvForm';
 import CvPreview from './components/CvPreview';
 import { useCvData } from './hooks/useCvData';
-import { DownloadIcon, BrandIcon, AnalysisIcon } from './components/IconComponents';
+import { DownloadIcon, BrandIcon, AnalysisIcon, PrintIcon } from './components/IconComponents';
 import AtsAnalysisModal from './components/AtsAnalysisModal';
+
+declare global {
+  interface Window {
+    html2pdf: any;
+  }
+}
 
 const App: React.FC = () => {
   const { cvData, setCvData, updateField, addEntry, removeEntry, updateEntry } = useCvData();
@@ -13,6 +18,41 @@ const App: React.FC = () => {
   const handlePrint = () => {
     window.print();
   };
+
+  const handleDownload = () => {
+    const element = document.getElementById('cv-preview');
+    if (!element) {
+        console.error("CV önizleme öğesi bulunamadı.");
+        return;
+    }
+
+    const sanitizedName = cvData.personalInfo.name.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'cv';
+    const fileName = `CV_${sanitizedName}.pdf`;
+
+    // Create a clone of the element to avoid altering the displayed version.
+    const clone = element.cloneNode(true) as HTMLElement;
+
+    // Create a container that will be used to render the clone off-screen
+    // with styles optimized for PDF generation.
+    const container = document.createElement('div');
+    container.classList.add('cv-pdf-render-container');
+    container.appendChild(clone);
+    document.body.appendChild(container);
+
+    const opt = {
+      margin:       0,
+      filename:     fileName,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    // Generate the PDF from the cloned element and clean up afterward.
+    window.html2pdf().from(clone).set(opt).save().finally(() => {
+        document.body.removeChild(container);
+    });
+  };
+
 
   return (
     <>
@@ -26,7 +66,7 @@ const App: React.FC = () => {
               </h1>
               <span className="bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">BETA</span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
                <button
                   onClick={() => setIsAtsModalOpen(true)}
                   className="flex items-center space-x-2 bg-white text-blue-600 border border-blue-600 dark:bg-gray-700 dark:text-blue-400 dark:border-blue-400 font-semibold px-4 py-2 rounded-lg shadow-sm hover:bg-blue-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
@@ -34,8 +74,15 @@ const App: React.FC = () => {
                   <AnalysisIcon />
                   <span>ATS Analizi</span>
               </button>
-              <button
+               <button
                 onClick={handlePrint}
+                className="flex items-center space-x-2 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 font-semibold px-4 py-2 rounded-lg shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors duration-200"
+              >
+                <PrintIcon />
+                <span>Yazdır</span>
+              </button>
+              <button
+                onClick={handleDownload}
                 className="flex items-center space-x-2 bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
               >
                 <DownloadIcon />
