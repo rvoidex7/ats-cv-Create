@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import CvForm from './components/CvForm';
 import CvPreview from './components/CvPreview';
 import { useCvData } from './hooks/useCvData';
-import { DownloadIcon, BrandIcon, AnalysisIcon, PrintIcon, KeyIcon } from './components/IconComponents';
+// Fix: Removed KeyIcon as it's no longer used.
+import { DownloadIcon, BrandIcon, AnalysisIcon, PrintIcon } from './components/IconComponents';
 import AtsAnalysisModal from './components/AtsAnalysisModal';
-import ApiKeyModal from './components/ApiKeyModal';
+// Fix: Removed ApiKeyModal import as it's no longer used.
 import ErrorToast from './components/ErrorToast';
 
 
@@ -17,7 +18,7 @@ declare global {
 const App: React.FC = () => {
   const { cvData, setCvData, updateField, addEntry, removeEntry, updateEntry, clearCvData, exportCvData, importCvData } = useCvData();
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
-  const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  // Fix: Removed state for ApiKeyModal as it's no longer used.
 
   const handlePrint = () => {
     window.print();
@@ -142,14 +143,7 @@ const App: React.FC = () => {
                 </svg>
                 <span className="hidden sm:inline">Temizle</span>
               </button>
-              <button
-                onClick={() => setIsApiKeyModalOpen(true)}
-                className="flex items-center space-x-1 sm:space-x-2 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
-                title="API Anahtarını Ayarla"
-              >
-                <KeyIcon />
-                <span className="hidden sm:inline">API</span>
-              </button>
+              {/* Fix: Removed API Key button as per guidelines. */}
               <button
                 onClick={() => setIsAtsModalOpen(true)}
                 className="flex items-center space-x-1 sm:space-x-2 bg-white text-blue-600 border border-blue-600 dark:bg-gray-700 dark:text-blue-400 dark:border-blue-400 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-blue-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
@@ -205,10 +199,7 @@ const App: React.FC = () => {
         onClose={() => setIsAtsModalOpen(false)}
         cvData={cvData}
       />
-      <ApiKeyModal
-        isOpen={isApiKeyModalOpen}
-        onClose={() => setIsApiKeyModalOpen(false)}
-      />
+      {/* Fix: Removed ApiKeyModal as per guidelines. */}
       <ErrorToast />
     </>
   );

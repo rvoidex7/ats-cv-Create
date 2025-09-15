@@ -81,7 +81,8 @@ Sadece kısa liste maddelerini döndür.`;
 
   const handleClick = async () => {
     if (!apiKey) {
-      setError('Bu özelliği kullanmak için lütfen API anahtarınızı girin.');
+      // Fix: Updated error message to not prompt for API key input from the UI.
+      setError('Gemini API anahtarı ayarlanmamış. Lütfen ortam değişkenlerini kontrol edin.');
       return;
     }
 

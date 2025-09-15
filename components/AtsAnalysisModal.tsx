@@ -19,7 +19,8 @@ const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cv
 
   const handleAnalyze = async () => {
     if (!apiKey) {
-      setError('Bu özelliği kullanmak için lütfen API anahtarınızı girin.');
+      // Fix: Updated error message to not prompt for API key input from the UI.
+      setError('Gemini API anahtarı ayarlanmamış. Lütfen ortam değişkenlerini kontrol edin.');
       return;
     }
 

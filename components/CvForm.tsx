@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { type CvData, type CvSection } from '../types';
 import { AddIcon, DeleteIcon } from './IconComponents';
@@ -55,12 +56,12 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
     <div className="space-y-6">
       <Section title="Kişisel Bilgiler">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Ad Soyad" value={cvData.personalInfo.name} onChange={(e) => onUpdateField('personalInfo', 'name', e.target.value)} />
-          <Input label="E-posta" type="email" value={cvData.personalInfo.email} onChange={(e) => onUpdateField('personalInfo', 'email', e.target.value)} />
-          <Input label="Telefon" value={cvData.personalInfo.phone} onChange={(e) => onUpdateField('personalInfo', 'phone', e.target.value)} />
-          <Input label="Adres" value={cvData.personalInfo.address} onChange={(e) => onUpdateField('personalInfo', 'address', e.target.value)} />
-          <Input label="LinkedIn Profili" value={cvData.personalInfo.linkedin} onChange={(e) => onUpdateField('personalInfo', 'linkedin', e.target.value)} />
-          <Input label="GitHub Profili" value={cvData.personalInfo.github} onChange={(e) => onUpdateField('personalInfo', 'github', e.target.value)} />
+          <Input label="Ad Soyad" value={cvData.personalInfo.name} onChange={(e) => onUpdateField('personalInfo', 'name', e.target.value)} autoComplete="name" />
+          <Input label="E-posta" type="email" value={cvData.personalInfo.email} onChange={(e) => onUpdateField('personalInfo', 'email', e.target.value)} autoComplete="email" />
+          <Input label="Telefon" value={cvData.personalInfo.phone} onChange={(e) => onUpdateField('personalInfo', 'phone', e.target.value)} autoComplete="tel" />
+          <Input label="Adres" value={cvData.personalInfo.address} onChange={(e) => onUpdateField('personalInfo', 'address', e.target.value)} autoComplete="street-address" />
+          <Input label="LinkedIn Profili" value={cvData.personalInfo.linkedin} onChange={(e) => onUpdateField('personalInfo', 'linkedin', e.target.value)} autoComplete="url" />
+          <Input label="GitHub Profili" value={cvData.personalInfo.github} onChange={(e) => onUpdateField('personalInfo', 'github', e.target.value)} autoComplete="url" />
         </div>
       </Section>
 
@@ -83,8 +84,8 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
               <DeleteIcon />
             </button>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input label="Pozisyon" value={exp.jobTitle} onChange={(e) => onUpdateEntry('experience', exp.id, 'jobTitle', e.target.value)} />
-              <Input label="Şirket" value={exp.company} onChange={(e) => onUpdateEntry('experience', exp.id, 'company', e.target.value)} />
+              <Input label="Pozisyon" value={exp.jobTitle} onChange={(e) => onUpdateEntry('experience', exp.id, 'jobTitle', e.target.value)} autoComplete="organization-title" />
+              <Input label="Şirket" value={exp.company} onChange={(e) => onUpdateEntry('experience', exp.id, 'company', e.target.value)} autoComplete="organization" />
               <Input label="Başlangıç Tarihi" value={exp.startDate} onChange={(e) => onUpdateEntry('experience', exp.id, 'startDate', e.target.value)} />
               <Input label="Bitiş Tarihi" value={exp.endDate} onChange={(e) => onUpdateEntry('experience', exp.id, 'endDate', e.target.value)} />
             </div>
@@ -112,7 +113,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
               <DeleteIcon />
             </button>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input label="Okul" value={edu.school} onChange={(e) => onUpdateEntry('education', edu.id, 'school', e.target.value)} />
+              <Input label="Okul" value={edu.school} onChange={(e) => onUpdateEntry('education', edu.id, 'school', e.target.value)} autoComplete="organization" />
               <Input label="Bölüm ve Derece" value={edu.degree} onChange={(e) => onUpdateEntry('education', edu.id, 'degree', e.target.value)} />
               <Input label="Başlangıç Tarihi" value={edu.startDate} onChange={(e) => onUpdateEntry('education', edu.id, 'startDate', e.target.value)} />
               <Input label="Bitiş Tarihi" value={edu.endDate} onChange={(e) => onUpdateEntry('education', edu.id, 'endDate', e.target.value)} />
