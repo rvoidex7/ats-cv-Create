@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { type CvData } from '../types';
+import { useLocalization } from '@/hooks/useLocalization';
 
 interface CvPreviewProps {
   cvData: CvData;
@@ -8,6 +9,7 @@ interface CvPreviewProps {
 
 const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
   const { personalInfo, summary, experience, education, skills } = cvData;
+  const { localization } = useLocalization();
 
   const formatSummary = (text: string) => {
     if (!text) return null;
@@ -97,14 +99,14 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
         </header>
 
         <section className="mb-6">
-          <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">Özet</h2>
+          <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">{localization.Summary}</h2>
           <div className="summary-content">
             {formatSummary(summary)}
           </div>
         </section>
 
         <section className="mb-6">
-          <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">İş Deneyimi</h2>
+          <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">{localization.ExperienceSection}</h2>
           {experience.map((exp) => (
             <div key={exp.id} className="mb-4">
               <div className="flex justify-between items-baseline">
@@ -120,7 +122,7 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
         </section>
 
         <section className="mb-6">
-          <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">Eğitim</h2>
+          <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">{localization.EducationSection}</h2>
           {education.map((edu) => (
             <div key={edu.id} className="mb-3">
               <div className="flex justify-between items-baseline">
@@ -133,7 +135,7 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
         </section>
 
         <section>
-          <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">Yetenekler</h2>
+          <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">{localization.SkillsSection}</h2>
           <div className="flex flex-wrap">
             {skills.map((skill, index) => (
               <span key={skill.id} className="text-sm text-gray-700">

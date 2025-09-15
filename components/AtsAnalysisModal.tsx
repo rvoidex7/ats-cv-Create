@@ -3,6 +3,7 @@ import { analyzeCvWithGemini } from '../services/geminiService';
 import { type CvData, type AtsAnalysisResult } from '../types';
 import { MagicIcon } from './IconComponents';
 import { AppContext } from '../context/AppContext';
+import { useLocalization } from '@/hooks/useLocalization';
 
 interface AtsAnalysisModalProps {
   isOpen: boolean;
@@ -14,18 +15,19 @@ const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cv
   const [jobDescription, setJobDescription] = useState('');
   const [analysisResult, setAnalysisResult] = useState<AtsAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { localization } = useLocalization();
   
   const { apiKey, error, setError } = useContext(AppContext);
 
   const handleAnalyze = async () => {
     if (!apiKey) {
       // Fix: Updated error message to not prompt for API key input from the UI.
-      setError('Gemini API anahtarı ayarlanmamış. Lütfen ortam değişkenlerini kontrol edin.');
+      setError(localization.GeminiApiKeyMissing);
       return;
     }
 
     if (!jobDescription.trim()) {
-      setError('Lütfen analiz için bir iş ilanı yapıştırın.');
+      setError(localization.JobDescriptionMissing);
       return;
     }
     setIsLoading(true);
@@ -57,20 +59,20 @@ const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cv
     <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 transition-opacity duration-300" aria-modal="true" role="dialog" onClick={handleClose}>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         <header className="p-4 border-b dark:border-gray-700 flex justify-between items-center sticky top-0 bg-white dark:bg-gray-800 z-10">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">ATS Uyumluluk Analizi</h2>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">{localization.ATSModalTitle}</h2>
           <button onClick={handleClose} className="text-gray-400 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 text-2xl font-light">&times;</button>
         </header>
         
         <main className="p-6 overflow-y-auto">
           {!analysisResult ? (
             <div>
-              <label htmlFor="job-desc" className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">İş İlanı</label>
-              <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">CV'nizin başvurduğunuz pozisyona ne kadar uygun olduğunu görmek için aşağıdaki alana iş ilanını yapıştırın ve analizi başlatın.</p>
+              <label htmlFor="job-desc" className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">{localization.JobDescriptionLabel}</label>
+              <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">{localization.JobDescriptionHelpText}</p>
               <textarea
                 id="job-desc"
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
-                placeholder="İş ilanını buraya yapıştırın..."
+                placeholder={localization.JobDescriptionPlaceholder}
                 rows={10}
                 className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
                 disabled={isLoading}
@@ -95,13 +97,13 @@ const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cv
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 text-center sm:text-left">Genel Uyumluluk Skoru</h3>
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 text-center sm:text-left">{localization.OverallMatchScore}</h3>
                   <p className="text-gray-600 dark:text-gray-400 mt-1 text-center sm:text-left">{analysisResult.summary}</p>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-bold text-gray-700 dark:text-gray-200 mb-2">İyileştirme Önerileri</h4>
+                <h4 className="font-bold text-gray-700 dark:text-gray-200 mb-2">{localization.ImprovementSuggestions}</h4>
                 <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-md border dark:border-gray-700">
                   {analysisResult.actionableFeedback.map((item, index) => <li key={index}>{item}</li>)}
                 </ul>
@@ -109,7 +111,7 @@ const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cv
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="font-bold text-green-700 dark:text-green-400 mb-2">Eşleşen Anahtar Kelimeler</h4>
+                    <h4 className="font-bold text-green-700 dark:text-green-400 mb-2">{localization.MatchingKeywords}</h4>
                   <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/50 rounded-md border border-green-200 dark:border-green-800">
                     {analysisResult.matchingKeywords.map((keyword) => (
                       <span key={keyword} className="bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300 text-xs font-medium px-2.5 py-0.5 rounded-full">{keyword}</span>
@@ -117,7 +119,7 @@ const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cv
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-bold text-red-700 dark:text-red-400 mb-2">Eksik Anahtar Kelimeler</h4>
+                    <h4 className="font-bold text-red-700 dark:text-red-400 mb-2">{localization.MissingKeywords}</h4>
                   <div className="flex flex-wrap gap-2 p-3 bg-red-50 dark:bg-red-900/50 rounded-md border border-red-200 dark:border-red-800">
                     {analysisResult.missingKeywords.map((keyword) => (
                       <span key={keyword} className="bg-red-100 text-red-800 dark:bg-red-500/20 dark:text-red-300 text-xs font-medium px-2.5 py-0.5 rounded-full">{keyword}</span>
@@ -135,7 +137,7 @@ const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cv
                 onClick={() => { setAnalysisResult(null); setError(null); }}
                 className="w-full sm:w-auto bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
             >
-                Yeni Analiz Yap
+                {localization.NewAnalysisButton}
             </button>
           ) : (
             <button
@@ -154,7 +156,7 @@ const AtsAnalysisModal: React.FC<AtsAnalysisModalProps> = ({ isOpen, onClose, cv
               <span>{isLoading ? 'Analiz Ediliyor...' : 'Analizi Başlat'}</span>
             </button>
           )}
-           <button onClick={handleClose} className="w-full sm:w-auto bg-white border border-gray-300 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 font-semibold px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">Kapat</button>
+           <button onClick={handleClose} className="w-full sm:w-auto bg-white border border-gray-300 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 font-semibold px-4 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">{localization.Close}</button>
         </footer>
       </div>
     </div>

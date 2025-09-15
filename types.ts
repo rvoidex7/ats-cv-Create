@@ -47,3 +47,75 @@ export interface AtsAnalysisResult {
   missingKeywords: string[];
   actionableFeedback: string[];
 }
+
+export interface Localization {
+  // CVForm.tsx
+  PersonalInfoSection: string;
+  Fullname: string;
+  Email: string;
+  Phone: string;
+  Address: string;
+  Linkedin: string;
+  Github: string;
+  ProfessionalSummarySection: string;
+  Summary: string;
+  Professional: string;
+  ExperienceSection: string;
+  JobTitle: string;
+  Company: string;
+  StartDate: string;
+  EndDate: string;
+  Description: string;
+  AddExperience: string;
+  EducationSection: string;
+  School: string;
+  Degree: string;
+  AddEducation: string;
+  SkillsSection: string;
+  AddSkill: string;
+  Position: string;
+
+  // App.tsx
+  Title: string;
+  HiddenTitle: string;
+  Beta: string;
+  Download: string;
+  Save: string;
+  Clear: string;
+  Analyze: string;
+  Print: string;
+  PDF: string;
+  ImportCVData: string;
+  SaveCVData: string;
+  ClearAllData: string;
+  ATSAnalyze: string;
+  DownloadAsPDF: string;
+  NoCVPreview: string;
+  CVImportSuccess: string;
+  ImportFailure: string;
+  ClearConfirmMessage: string;
+
+  // ErrorToast.tsx
+  Error: string;
+  Close: string;
+
+  // AtsAnalysisModal.tsx
+  ATSModalTitle: string;
+  JobDescriptionLabel: string;
+  JobDescriptionPlaceholder: string;
+  JobDescriptionHelpText: string;
+  GeminiApiKeyMissing: string;
+  JobDescriptionMissing: string;
+  AnalyzeButton: string;
+  AnalyzingButton: string;
+  NewAnalysisButton: string;
+  OverallMatchScore: string;
+  ImprovementSuggestions: string;
+  MatchingKeywords: string;
+  MissingKeywords: string;
+
+  //LanguageToggleButton.tsx
+  ChangeLanguage: string;
+
+  
+}

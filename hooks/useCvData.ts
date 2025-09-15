@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { type CvData, type CvSection, type PersonalInfo, type Experience, type Education, type Skill } from '../types';
-import { INITIAL_CV_DATA } from '../constants';
+import { INITIAL_CV_DATA_TR, INITIAL_CV_DATA_EN } from '../constants';
+import { LOCALIZATION_KEY } from '@/context/LocalizationContext';
 
 const CV_DATA_STORAGE_KEY = 'cv-data';
 
@@ -18,7 +19,14 @@ const loadCvDataFromStorage = (): CvData => {
   } catch (error) {
     console.error('CV verileri localStorage\'dan yüklenirken hata oluştu:', error);
   }
-  return INITIAL_CV_DATA;
+
+  const localization = localStorage.getItem(LOCALIZATION_KEY)
+
+  if(localization != null && localization == "tr-TR") {
+    return INITIAL_CV_DATA_TR;
+  } else {
+    return INITIAL_CV_DATA_EN;
+  }
 };
 
 const saveCvDataToStorage = (cvData: CvData) => {
@@ -86,7 +94,13 @@ export const useCvData = () => {
   };
 
   const clearCvData = () => {
-    setCvDataInternal(INITIAL_CV_DATA);
+    const localization = localStorage.getItem(LOCALIZATION_KEY)
+
+    if (localization != null && localization == "tr-TR") {
+      setCvDataInternal(INITIAL_CV_DATA_TR);
+    } else {
+      setCvDataInternal(INITIAL_CV_DATA_EN);
+    }
     try {
       localStorage.removeItem(CV_DATA_STORAGE_KEY);
     } catch (error) {

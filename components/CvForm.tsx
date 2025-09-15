@@ -4,6 +4,7 @@ import React from 'react';
 import { type CvData, type CvSection } from '../types';
 import { AddIcon, DeleteIcon } from './IconComponents';
 import GeminiEnhancer from './GeminiEnhancer';
+import { useLocalization } from '@/hooks/useLocalization';
 
 interface CvFormProps {
   cvData: CvData;
@@ -43,6 +44,7 @@ const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement> & { l
 );
 
 const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRemoveEntry, onUpdateEntry, setCvData }) => {
+  const { localization } = useLocalization();
 
   const handleSummaryUpdate = (newSummary: string) => {
     setCvData(prev => ({ ...prev, summary: newSummary }));
@@ -54,43 +56,43 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
 
   return (
     <div className="space-y-6">
-      <Section title="Kişisel Bilgiler">
+      <Section title={localization.PersonalInfoSection}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Ad Soyad" value={cvData.personalInfo.name} onChange={(e) => onUpdateField('personalInfo', 'name', e.target.value)} autoComplete="name" />
-          <Input label="E-posta" type="email" value={cvData.personalInfo.email} onChange={(e) => onUpdateField('personalInfo', 'email', e.target.value)} autoComplete="email" />
-          <Input label="Telefon" value={cvData.personalInfo.phone} onChange={(e) => onUpdateField('personalInfo', 'phone', e.target.value)} autoComplete="tel" />
-          <Input label="Adres" value={cvData.personalInfo.address} onChange={(e) => onUpdateField('personalInfo', 'address', e.target.value)} autoComplete="street-address" />
-          <Input label="LinkedIn Profili" value={cvData.personalInfo.linkedin} onChange={(e) => onUpdateField('personalInfo', 'linkedin', e.target.value)} autoComplete="url" />
-          <Input label="GitHub Profili" value={cvData.personalInfo.github} onChange={(e) => onUpdateField('personalInfo', 'github', e.target.value)} autoComplete="url" />
+          <Input label={localization.Fullname} value={cvData.personalInfo.name} onChange={(e) => onUpdateField('personalInfo', 'name', e.target.value)} autoComplete="name" />
+          <Input label={localization.Email} type="email" value={cvData.personalInfo.email} onChange={(e) => onUpdateField('personalInfo', 'email', e.target.value)} autoComplete="email" />
+          <Input label={localization.Phone} value={cvData.personalInfo.phone} onChange={(e) => onUpdateField('personalInfo', 'phone', e.target.value)} autoComplete="tel" />
+          <Input label={localization.Address} value={cvData.personalInfo.address} onChange={(e) => onUpdateField('personalInfo', 'address', e.target.value)} autoComplete="street-address" />
+          <Input label={localization.Linkedin} value={cvData.personalInfo.linkedin} onChange={(e) => onUpdateField('personalInfo', 'linkedin', e.target.value)} autoComplete="url" />
+          <Input label={localization.Github} value={cvData.personalInfo.github} onChange={(e) => onUpdateField('personalInfo', 'github', e.target.value)} autoComplete="url" />
         </div>
       </Section>
 
-      <Section title="Profesyonel Özet">
+      <Section title={localization.ProfessionalSummarySection}>
         <div className="relative">
-          <Textarea label="Özet" value={cvData.summary} onChange={(e) => setCvData({ ...cvData, summary: e.target.value })} />
+          <Textarea label={localization.Summary} value={cvData.summary} onChange={(e) => setCvData({ ...cvData, summary: e.target.value })} />
            <GeminiEnhancer
               promptType="summary"
-              context={{ jobTitle: cvData.experience[0]?.jobTitle || 'profesyonel' }}
+              context={{ jobTitle: cvData.experience[0]?.jobTitle || localization.Professional }}
               currentText={cvData.summary}
               onGeneratedText={handleSummaryUpdate}
             />
         </div>
       </Section>
 
-      <Section title="İş Deneyimi">
+      <Section title={localization.ExperienceSection}>
         {cvData.experience.map((exp, index) => (
           <div key={exp.id} className="p-4 border dark:border-gray-700 rounded-md mb-4 relative bg-gray-50 dark:bg-gray-800/50">
             <button onClick={() => onRemoveEntry('experience', exp.id)} className="absolute top-2 right-2 text-gray-400 dark:text-gray-500 hover:text-red-500">
               <DeleteIcon />
             </button>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input label="Pozisyon" value={exp.jobTitle} onChange={(e) => onUpdateEntry('experience', exp.id, 'jobTitle', e.target.value)} autoComplete="organization-title" />
-              <Input label="Şirket" value={exp.company} onChange={(e) => onUpdateEntry('experience', exp.id, 'company', e.target.value)} autoComplete="organization" />
-              <Input label="Başlangıç Tarihi" value={exp.startDate} onChange={(e) => onUpdateEntry('experience', exp.id, 'startDate', e.target.value)} />
-              <Input label="Bitiş Tarihi" value={exp.endDate} onChange={(e) => onUpdateEntry('experience', exp.id, 'endDate', e.target.value)} />
+              <Input label={localization.Position} value={exp.jobTitle} onChange={(e) => onUpdateEntry('experience', exp.id, 'jobTitle', e.target.value)} autoComplete="organization-title" />
+              <Input label={localization.Company} value={exp.company} onChange={(e) => onUpdateEntry('experience', exp.id, 'company', e.target.value)} autoComplete="organization" />
+              <Input label={localization.StartDate} value={exp.startDate} onChange={(e) => onUpdateEntry('experience', exp.id, 'startDate', e.target.value)} />
+              <Input label={localization.EndDate} value={exp.endDate} onChange={(e) => onUpdateEntry('experience', exp.id, 'endDate', e.target.value)} />
             </div>
             <div className="relative mt-4">
-              <Textarea label="Açıklama" value={exp.description} onChange={(e) => onUpdateEntry('experience', exp.id, 'description', e.target.value)} />
+              <Textarea label={localization.Description} value={exp.description} onChange={(e) => onUpdateEntry('experience', exp.id, 'description', e.target.value)} />
               <GeminiEnhancer
                 promptType="experience"
                 context={{ jobTitle: exp.jobTitle, company: exp.company }}
@@ -102,31 +104,31 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
         ))}
         <button onClick={() => onAddEntry('experience')} className="flex items-center space-x-2 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300">
           <AddIcon />
-          <span>Deneyim Ekle</span>
+          <span>{localization.AddExperience}</span>
         </button>
       </Section>
 
-      <Section title="Eğitim">
+      <Section title={localization.EducationSection}>
         {cvData.education.map((edu, index) => (
           <div key={edu.id} className="p-4 border dark:border-gray-700 rounded-md mb-4 relative bg-gray-50 dark:bg-gray-800/50">
             <button onClick={() => onRemoveEntry('education', edu.id)} className="absolute top-2 right-2 text-gray-400 dark:text-gray-500 hover:text-red-500">
               <DeleteIcon />
             </button>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input label="Okul" value={edu.school} onChange={(e) => onUpdateEntry('education', edu.id, 'school', e.target.value)} autoComplete="organization" />
-              <Input label="Bölüm ve Derece" value={edu.degree} onChange={(e) => onUpdateEntry('education', edu.id, 'degree', e.target.value)} />
-              <Input label="Başlangıç Tarihi" value={edu.startDate} onChange={(e) => onUpdateEntry('education', edu.id, 'startDate', e.target.value)} />
-              <Input label="Bitiş Tarihi" value={edu.endDate} onChange={(e) => onUpdateEntry('education', edu.id, 'endDate', e.target.value)} />
+              <Input label={localization.School} value={edu.school} onChange={(e) => onUpdateEntry('education', edu.id, 'school', e.target.value)} autoComplete="organization" />
+              <Input label={localization.Degree} value={edu.degree} onChange={(e) => onUpdateEntry('education', edu.id, 'degree', e.target.value)} />
+              <Input label={localization.StartDate} value={edu.startDate} onChange={(e) => onUpdateEntry('education', edu.id, 'startDate', e.target.value)} />
+              <Input label={localization.EndDate} value={edu.endDate} onChange={(e) => onUpdateEntry('education', edu.id, 'endDate', e.target.value)} />
             </div>
           </div>
         ))}
         <button onClick={() => onAddEntry('education')} className="flex items-center space-x-2 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300">
           <AddIcon />
-          <span>Eğitim Ekle</span>
+          <span>{localization.AddEducation}</span>
         </button>
       </Section>
       
-      <Section title="Yetenekler">
+      <Section title={localization.SkillsSection}>
         <div className="flex flex-wrap gap-2">
             {cvData.skills.map(skill => (
                 <div key={skill.id} className="flex items-center bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-sm font-medium px-3 py-1 rounded-full">
@@ -145,7 +147,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
         </div>
         <button onClick={() => onAddEntry('skills')} className="mt-4 flex items-center space-x-2 text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-800 dark:hover:text-blue-300">
           <AddIcon />
-          <span>Yetenek Ekle</span>
+          <span>{localization.AddSkill}</span>
         </button>
       </Section>
     </div>

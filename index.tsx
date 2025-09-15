@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { AppProvider } from './context/AppContext';
+import { LocalizationProvider } from './context/LocalizationContext';
 
 const container = document.getElementById('root');
 if (container) {
@@ -9,7 +10,9 @@ if (container) {
   root.render(
     <React.StrictMode>
       <AppProvider>
-        <App />
+        <LocalizationProvider>
+          <App />
+        </LocalizationProvider>
       </AppProvider>
     </React.StrictMode>
   );
