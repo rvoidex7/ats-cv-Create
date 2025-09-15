@@ -35,6 +35,7 @@ Bu uygulama, Google Gemini AI yardımıyla Başvuru Takip Sistemleri (ATS) için
 
 ## Yapılacaklar Listesi
 
+- [ ] Heskesin erişimine açılması için bir websitesi olarak yayınlanması.
 - [ ] Kişisel veri mahremiyetinin arttırılmasına yönelik eklemeler.
 - [ ] Yerel LLM (Büyük Dil Modeli) entegrasyonu seçeneği.
 - [ ] Farklı CV şablonları arasından seçim yapma imkanı.
