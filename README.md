@@ -27,7 +27,7 @@ Bu uygulama, Google Gemini AI yardımıyla Başvuru Takip Sistemleri (ATS) için
 ## Ekran Görüntüleri
 
 <div align="center">
-<img width="1374" height="856" alt="image" src="https://github.com/user-attachments/assets/56caf68d-807b-47e1-83ac-e9eaf0e14a8e" />
+<img width="1368" height="855" alt="image" src="https://github.com/user-attachments/assets/267aca02-64ee-4230-9929-f22441ca1a06" />
 <img width="601" height="772" alt="image" src="https://github.com/user-attachments/assets/1f0e3898-61ff-43fd-96f4-f5a74ebbdbc4" />
 </div>
 
@@ -35,7 +35,6 @@ Bu uygulama, Google Gemini AI yardımıyla Başvuru Takip Sistemleri (ATS) için
 
 ## Yapılacaklar Listesi
 
-- [ ] Heskesin erişimine açılması için bir websitesi olarak yayınlanması.
 - [ ] Kişisel veri mahremiyetinin arttırılmasına yönelik eklemeler.
 - [ ] Yerel LLM (Büyük Dil Modeli) entegrasyonu seçeneği.
 - [ ] Farklı CV şablonları arasından seçim yapma imkanı.
