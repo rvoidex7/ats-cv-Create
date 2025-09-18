@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { type CvData } from '../types';
 
@@ -74,7 +75,7 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
   };
 
   return (
-    <div id="cv-preview" className="bg-white p-8 md:p-12 shadow-lg border border-gray-200 aspect-[210/297] max-w-2xl mx-auto transition-transform duration-300 transform lg:scale-100">
+    <div id="cv-preview" className="bg-white p-8 md:p-12 shadow-lg border border-gray-200 aspect-[210/297] w-full">
       <div className="cv-content">
         <header className="text-center mb-8 border-b pb-4 border-gray-300">
           <h1 className="text-4xl font-bold text-gray-900 tracking-tight">{personalInfo.name}</h1>

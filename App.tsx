@@ -2,76 +2,16 @@ import React, { useState } from 'react';
 import CvForm from './components/CvForm';
 import CvPreview from './components/CvPreview';
 import { useCvData } from './hooks/useCvData';
-// Fix: Removed KeyIcon as it's no longer used.
-import { DownloadIcon, BrandIcon, AnalysisIcon, PrintIcon } from './components/IconComponents';
+import { BrandIcon, AnalysisIcon, PrintIcon } from './components/IconComponents';
 import AtsAnalysisModal from './components/AtsAnalysisModal';
-// Fix: Removed ApiKeyModal import as it's no longer used.
 import ErrorToast from './components/ErrorToast';
-
-
-declare global {
-  interface Window {
-    html2pdf: any;
-  }
-}
 
 const App: React.FC = () => {
   const { cvData, setCvData, updateField, addEntry, removeEntry, updateEntry, clearCvData, exportCvData, importCvData } = useCvData();
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
-  // Fix: Removed state for ApiKeyModal as it's no longer used.
 
   const handlePrint = () => {
     window.print();
-  };
-
-  const handleDownload = () => {
-    const element = document.getElementById('cv-preview');
-    if (!element) {
-      console.error("CV önizleme öğesi bulunamadı.");
-      return;
-    }
-
-    // Türkçe karakterleri düzelt ve dosya adını temizle
-    const turkishToEnglish = (str: string) => {
-      const charMap: { [key: string]: string } = {
-        'ç': 'c', 'Ç': 'C',
-        'ğ': 'g', 'Ğ': 'G',
-        'ı': 'i', 'I': 'I',
-        'İ': 'I', 'i': 'i',
-        'ö': 'o', 'Ö': 'O',
-        'ş': 's', 'Ş': 'S',
-        'ü': 'u', 'Ü': 'U'
-      };
-
-      return str.split('').map(char => charMap[char] || char).join('');
-    };
-
-    const sanitizedName = turkishToEnglish(cvData.personalInfo.name)
-      .replace(/[^a-zA-Z0-9\s]/g, '') // Özel karakterleri kaldır
-      .trim()
-      .replace(/\s+/g, '_') // Boşlukları alt çizgi ile değiştir
-      .toLowerCase() || 'cv';
-
-    const fileName = `CV_${sanitizedName}.pdf`;
-
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    const container = document.createElement('div');
-    container.classList.add('cv-pdf-render-container');
-    container.appendChild(clone);
-    document.body.appendChild(container);
-
-    const opt = {
-      margin: 0,
-      filename: fileName,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    window.html2pdf().from(clone).set(opt).save().finally(() => {
-      document.body.removeChild(container);
-    });
   };
 
   const handleImport = () => {
@@ -143,7 +83,6 @@ const App: React.FC = () => {
                 </svg>
                 <span className="hidden sm:inline">Temizle</span>
               </button>
-              {/* Fix: Removed API Key button as per guidelines. */}
               <button
                 onClick={() => setIsAtsModalOpen(true)}
                 className="flex items-center space-x-1 sm:space-x-2 bg-white text-blue-600 border border-blue-600 dark:bg-gray-700 dark:text-blue-400 dark:border-blue-400 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-blue-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
@@ -154,19 +93,11 @@ const App: React.FC = () => {
               </button>
               <button
                 onClick={handlePrint}
-                className="flex items-center space-x-1 sm:space-x-2 bg-gray-100 text-gray-700 border border-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
-                title="Yazdır"
+                className="flex items-center space-x-1 sm:space-x-2 bg-blue-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                title="Yazdır / PDF Olarak Kaydet"
               >
                 <PrintIcon />
-                <span className="hidden sm:inline">Yazdır</span>
-              </button>
-              <button
-                onClick={handleDownload}
-                className="flex items-center space-x-1 sm:space-x-2 bg-blue-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                title="PDF Olarak İndir"
-              >
-                <DownloadIcon />
-                <span className="hidden sm:inline">PDF</span>
+                <span className="hidden sm:inline">Yazdır / PDF</span>
               </button>
             </div>
           </div>
@@ -183,7 +114,7 @@ const App: React.FC = () => {
                 setCvData={setCvData}
               />
             </div>
-            <div className="lg:col-span-2 hidden lg:block">
+            <div id="cv-preview-container" className="lg:col-span-2 hidden lg:block">
               <div className="lg:sticky lg:top-24">
                 <CvPreview cvData={cvData} />
               </div>
@@ -199,7 +130,6 @@ const App: React.FC = () => {
         onClose={() => setIsAtsModalOpen(false)}
         cvData={cvData}
       />
-      {/* Fix: Removed ApiKeyModal as per guidelines. */}
       <ErrorToast />
     </>
   );

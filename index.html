@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ATS Uyumlu CV Oluşturucu</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
       body {
@@ -16,21 +15,27 @@
         body {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
         }
         .no-print {
           display: none !important;
         }
-        #cv-preview {
-          margin: 0;
-          border: none;
-          box-shadow: none;
-          transform: scale(1);
-          width: 100%;
-          max-width: 100%;
-          height: auto;
-        }
         main {
-            padding: 0;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        #cv-preview-container, #cv-preview {
+          margin: 0 !important;
+          padding: 0 !important;
+          border: none !important;
+          box-shadow: none !important;
+          transform: scale(1) !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          height: 100% !important;
+          display: block !important;
         }
       }
       @keyframes fadeIn {
@@ -53,26 +58,6 @@
       }
       ::-webkit-scrollbar-thumb:hover {
         background-color: #6b7280; /* dark:bg-gray-500 */
-      }
-      /* Styles for robust PDF export */
-      .cv-pdf-render-container {
-        position: fixed !important;
-        left: -9999px;
-        top: 0;
-        opacity: 0;
-        z-index: -100;
-      }
-      .cv-pdf-render-container #cv-preview {
-        /* Reset on-screen styles */
-        margin: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
-        transform: none !important;
-        max-width: none !important;
-        
-        /* Define A4 dimensions for rendering */
-        width: 210mm;
-        height: 297mm;
       }
     </style>
   <script type="importmap">
