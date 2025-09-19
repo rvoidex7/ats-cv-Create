@@ -61,7 +61,7 @@ const App: React.FC = () => {
               <BrandIcon />
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3">
                 <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  <span className="hidden sm:inline">ATS Uyumlu CV Oluşturucu</span>
+                  <span className="hidden sm:inline">ATS Compatible CV Creator</span>
                   <span className="sm:hidden">ATS CV</span>
                 </h1>
                 <span className="bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">BETA</span>

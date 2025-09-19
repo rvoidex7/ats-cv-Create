@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { type CvData, type CvSection, type PersonalInfo, type Experience, type Education, type Skill } from '../types';
 import { INITIAL_CV_DATA } from '../constants';
@@ -10,9 +9,16 @@ const loadCvDataFromStorage = (): CvData => {
     const savedData = localStorage.getItem(CV_DATA_STORAGE_KEY);
     if (savedData) {
       const parsedData = JSON.parse(savedData);
-      // Veri yapısının doğruluğunu kontrol et
       if (parsedData && typeof parsedData === 'object' && parsedData.personalInfo) {
-        return parsedData as CvData;
+        // Eksik alanları tamamla
+        return {
+          ...INITIAL_CV_DATA,
+          ...parsedData,
+          projects: parsedData.projects ?? [],
+          experience: parsedData.experience ?? [],
+          education: parsedData.education ?? [],
+          skills: parsedData.skills ?? [],
+        };
       }
     }
   } catch (error) {
@@ -55,13 +61,16 @@ export const useCvData = () => {
   const addEntry = (section: CvSection) => {
     const newId = `${section}-${Date.now()}`;
     setCvData((prev) => {
-      const newEntry =
-        section === 'experience'
-          ? { id: newId, jobTitle: '', company: '', startDate: '', endDate: '', description: '' }
-          : section === 'education'
-            ? { id: newId, school: '', degree: '', startDate: '', endDate: '' }
-            : { id: newId, name: '' };
-
+      let newEntry;
+      if (section === 'experience') {
+        newEntry = { id: newId, jobTitle: '', company: '', startDate: '', endDate: '', description: '' };
+      } else if (section === 'education') {
+        newEntry = { id: newId, school: '', degree: '', startDate: '', endDate: '' };
+      } else if (section === 'projects') {
+        newEntry = { id: newId, title: '', context: '', role: '', description: '' }; // <-- Bunu ekle!
+      } else {
+        newEntry = { id: newId, name: '' };
+      }
       return {
         ...prev,
         [section]: [...prev[section], newEntry],
@@ -88,7 +97,7 @@ export const useCvData = () => {
   const clearCvData = () => {
     setCvDataInternal(INITIAL_CV_DATA);
     try {
-      localStorage.removeItem(CV_DATA_STORAGE_KEY);
+      localStorage.removeItem('cv-data');
     } catch (error) {
       console.error('CV verileri localStorage\'dan silinirken hata oluştu:', error);
     }
