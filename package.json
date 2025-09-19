@@ -1,18 +1,37 @@
 {
-  "name": "ats-uyumlu-cv-oluşturucu",
-  "version": "0.0.0",
+  "name": "ats-uyumlu-cv-olusturucu",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "@google/genai": "^1.19.0",
-    "@react-pdf/renderer": "^3.4.5",
+    "@google/generative-ai": "^0.12.0",
+    "@react-pdf/renderer": "^3.4.4",
+    "clsx": "^2.1.0",
+    "lucide-react": "^0.363.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tailwind-merge": "^2.2.2"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "@types/node": "^20.12.12",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.7",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.12"
   }
 }

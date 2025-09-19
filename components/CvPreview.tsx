@@ -17,7 +17,7 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
     const elements: JSX.Element[] = [];
     let currentParagraph: string[] = [];
     
-    lines.forEach((line, index) => {
+    lines.forEach((line) => {
       const trimmedLine = line.trim();
       
       // Boş satır - paragraf sonu
@@ -34,8 +34,8 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
       }
       
       // Liste işaretleri (-, *, •, ◦, ▪, ▫)
-      const listMarkers = /^[\-\*\•\◦\▪\▫]\s+(.+)$/;
-      const numberedList = /^\d+[\.\)]\s+(.+)$/;
+      const listMarkers = /^[-*•◦▪▫]\s+(.+)$/;
+      const numberedList = /^\d+[.)]\s+(.+)$/;
       
       if (listMarkers.test(trimmedLine) || numberedList.test(trimmedLine)) {
         // Önceki paragrafı bitir

@@ -78,7 +78,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
       </Section>
 
       <Section title="İş Deneyimi">
-        {cvData.experience.map((exp, index) => (
+        {cvData.experience.map((exp) => (
           <div key={exp.id} className="p-4 border dark:border-gray-700 rounded-md mb-4 relative bg-gray-50 dark:bg-gray-800/50">
             <button onClick={() => onRemoveEntry('experience', exp.id)} className="absolute top-2 right-2 text-gray-400 dark:text-gray-500 hover:text-red-500">
               <DeleteIcon />
@@ -107,7 +107,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
       </Section>
 
       <Section title="Eğitim">
-        {cvData.education.map((edu, index) => (
+        {cvData.education.map((edu) => (
           <div key={edu.id} className="p-4 border dark:border-gray-700 rounded-md mb-4 relative bg-gray-50 dark:bg-gray-800/50">
             <button onClick={() => onRemoveEntry('education', edu.id)} className="absolute top-2 right-2 text-gray-400 dark:text-gray-500 hover:text-red-500">
               <DeleteIcon />
