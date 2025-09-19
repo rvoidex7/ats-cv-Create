@@ -76,12 +76,11 @@ const App: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-        <header className="no-print bg-white dark:bg-gray-800 shadow-sm dark:border-b dark:border-gray-700 sticky top-0 z-30">
+      <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 overflow-hidden">
+        <header className="no-print bg-white dark:bg-gray-800 shadow-sm dark:border-b dark:border-gray-700 z-30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3 flex justify-between items-center">
             <div className="flex items-center space-x-2 sm:space-x-3">
               <BrandIcon />
-
               <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3">
                 <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
                   <span className="hidden sm:inline">ATS Compatible CV Creator</span>
@@ -89,7 +88,6 @@ const App: React.FC = () => {
                 </h1>
                 <span className="bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">BETA</span>
               </div>
-
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
               <button onClick={handleImport} className="flex items-center space-x-1 sm:space-x-2 bg-green-100 text-green-700 border border-green-300 dark:bg-green-900/60 dark:text-green-300 dark:border-green-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-green-200 dark:hover:bg-green-800/60" title="CV Verilerini Yükle (.json)">
@@ -115,19 +113,20 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        <div className="flex-1 flex flex-row overflow-hidden">
-          <div className="flex-shrink-0 w-64 bg-white dark:bg-gray-800 shadow-md no-print z-20">
-             <AppSidebar activePage={activePage} setActivePage={setActivePage} />
+        <div className="flex-1 flex flex-row overflow-y-hidden">
+          {/* Sol Dikey Navigasyon Menüsü */}
+          <div className="flex-shrink-0 w-64 bg-white dark:bg-gray-800 shadow-md no-print z-20 overflow-y-auto">
+            <AppSidebar activePage={activePage} setActivePage={setActivePage} />
           </div>
 
+          {/* Orta Ana İçerik Alanı */}
           <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
             {renderPage()}
           </main>
 
+          {/* Sağ CV Önizleme Sütunu */}
           <div className="w-full lg:w-2/5 bg-gray-200 dark:bg-gray-700 p-4 overflow-y-auto no-print z-10">
-            <div className="lg:sticky lg:top-4">
-              <CvPreview cvData={cvData} />
-            </div>
+            <CvPreview cvData={cvData} />
           </div>
         </div>
       </div>
