@@ -1,14 +1,72 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useCvData } from '../hooks/useCvData';
+import { CvData } from '../types';
 
 const AIFeedPage: React.FC = () => {
+  const { cvData, setCvData } = useCvData();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      console.log('File selected:', file.name);
-      // Here you would trigger the server-side processing (Model 1)
-      alert(`"${file.name}" yüklendi. Bu özellik yakında aktif olacaktır.`);
+    if (!file) {
+      return;
     }
+
+    setIsLoading(true);
+    setError(null);
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const htmlContent = e.target?.result as string;
+
+        const response = await fetch('/api/parse-linkedin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ html: htmlContent }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Bilinmeyen bir ağ hatası oluştu.');
+        }
+
+        const parsedData: Partial<CvData> = await response.json();
+
+        // Mevcut CV verileriyle gelen verileri birleştir.
+        // Bu, AI'ın döndürmediği alanların kaybolmasını önler.
+        setCvData(prevData => ({
+          ...prevData,
+          ...parsedData,
+          personalInfo: {
+            ...prevData.personalInfo,
+            ...parsedData.personalInfo,
+          },
+          experience: parsedData.experience || prevData.experience,
+          education: parsedData.education || prevData.education,
+          skills: parsedData.skills || prevData.skills,
+          projects: parsedData.projects || prevData.projects,
+        }));
+
+        // Kullanıcıyı düzenleyici sayfasına yönlendir
+        window.location.href = '/';
+
+      } catch (err: any) {
+        setError(err.message || 'Dosya işlenirken bir hata oluştu.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    reader.onerror = () => {
+      setError('Dosya okunurken bir hata oluştu.');
+      setIsLoading(false);
+    };
+
+    reader.readAsText(file);
   };
 
   return (
@@ -23,8 +81,8 @@ const AIFeedPage: React.FC = () => {
           <strong className="dark:text-yellow-400">Not:</strong> Bu özellik, sunucu tarafında sizin verilerinizi işleyerek formu dolduran Model 1 mimarisini kullanır.
         </p>
         <div className="mt-4">
-          <label htmlFor="linkedin-upload" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer">
-            LinkedIn HTML Yükle
+          <label htmlFor="linkedin-upload" className={`px-4 py-2 text-white rounded-lg cursor-pointer ${isLoading ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-700'}`}>
+            {isLoading ? 'İşleniyor...' : 'LinkedIn HTML Yükle'}
           </label>
           <input
             id="linkedin-upload"
@@ -32,8 +90,10 @@ const AIFeedPage: React.FC = () => {
             className="hidden"
             accept=".html"
             onChange={handleFileChange}
+            disabled={isLoading}
           />
         </div>
+        {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
       </div>
 
       <div className="p-4 border rounded-lg dark:border-gray-700">
