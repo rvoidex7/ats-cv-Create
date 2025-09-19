@@ -3,6 +3,7 @@ import CvForm from './components/CvForm';
 import CvPreview from './components/CvPreview';
 import { useCvData } from './hooks/useCvData';
 import { BrandIcon, AnalysisIcon, PrintIcon } from './components/IconComponents';
+import { DownloadIcon } from './components/IconComponents';
 import AtsAnalysisModal from './components/AtsAnalysisModal';
 import ErrorToast from './components/ErrorToast';
 
@@ -32,6 +33,24 @@ const App: React.FC = () => {
     input.click();
   };
 
+
+  const handleExportPdf = async () => {
+    try {
+      const [{ pdf }, { default: CvPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./components/CvPdf'),
+      ]);
+      const blob = await pdf(<CvPdf cvData={cvData} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `cv-${new Date().toISOString().split('T')[0]}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(`PDF oluşturulurken hata oluştu: ${(err as Error).message}`);
+    }
+  };
 
   return (
     <>
@@ -91,6 +110,16 @@ const App: React.FC = () => {
                 <AnalysisIcon />
                 <span className="hidden sm:inline">Analiz</span>
               </button>
+
+              <button
+                onClick={handleExportPdf}
+                className="flex items-center space-x-1 sm:space-x-2 bg-indigo-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                title="PDF Olarak İndir"
+              >
+                <DownloadIcon />
+                <span className="hidden sm:inline">PDF İndir</span>
+              </button>
+
               <button
                 onClick={handlePrint}
                 className="flex items-center space-x-1 sm:space-x-2 bg-blue-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
