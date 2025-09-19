@@ -98,8 +98,22 @@ const cvDataSchema = {
                 required: ['id', 'name']
             }
         },
+        projects: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    id: { type: Type.STRING },
+                    title: { type: Type.STRING },
+                    context: { type: Type.STRING },
+                    role: { type: Type.STRING },
+                    description: { type: Type.STRING }
+                },
+                required: ['id', 'title']
+            }
+        },
     },
-    required: ['personalInfo', 'summary', 'experience', 'education', 'skills']
+    required: ['personalInfo', 'summary', 'experience', 'education', 'skills', 'projects']
 };
 
 
@@ -109,17 +123,20 @@ export const parseLinkedInHtmlWithGemini = async (apiKey: string, htmlContent: s
     }
 
     const prompt = `
-        Sen bir HTML ayrıştırma uzmanısın. Görevin, bir LinkedIn profil sayfasından alınmış HTML içeriğini analiz etmek ve bu içerikten yapılandırılmış bir CV verisi çıkarmaktır.
-        Lütfen aşağıdaki HTML içeriğini analiz et ve sonucu belirtilen JSON şemasına uygun olarak Türkçe döndür.
-        Tarihleri "Ay Yıl" (örn: "Ocak 2020") formatında çıkarmaya çalış.
-        Her deneyim, eğitim ve yetenek için benzersiz bir ID oluştur (örn: "experience-1", "skill-2").
+SENARYO:
+Sen, yapısal olmayan HTML verilerini ayıklama konusunda uzman bir veri dönüştürme aracısın. Görevin, sana verilen karmaşık bir LinkedIn profil HTML dosyasının içeriğini analiz etmek ve içindeki temel CV bilgilerini (Kişisel Bilgiler, İş Deneyimi, Eğitim, Projeler vb.) temiz, yapılandırılmış bir JSON formatına dönüştürmektir.
 
-        İşte HTML içeriği:
-        \`\`\`html
-        ${htmlContent.substring(0, 30000)} 
-        \`\`\`
+KURALLAR:
+- Çıktın SADECE ve SADECE valid bir JSON nesnesi olmalıdır. Başka hiçbir metin ekleme.
+- JSON yapısı, projenin \`CvData\` tipine uygun olmalıdır.
+- **ÖNEMLİ:** Her bir iş deneyimi, eğitim, yetenek ve proje girdisi için \`id\` alanına \`experience-1\`, \`education-123\` gibi benzersiz bir string ata.
+- HTML içinde aradığın bir bölümü bulamazsan, o alanı JSON çıktısına boş bir dizi \`[]\` veya boş metin \`""\` olarak ekle ama asla JSON formatını bozma.
+- Tarihleri ve unvanları mümkün olduğunca temiz bir şekilde ayıkla.
 
-        Tüm yanıtın sadece JSON nesnesi olmalıdır. Başka hiçbir metin ekleme.
+İşte ayıklaman gereken HTML içeriği:
+"""
+${htmlContent}
+"""
     `;
 
     try {
