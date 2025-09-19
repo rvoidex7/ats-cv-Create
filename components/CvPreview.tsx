@@ -18,8 +18,8 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
     let currentParagraph: string[] = [];
 
 
-    const listMarkers = /^[\-\*\•\◦\▪\▫]\s+(.+)$/;
-    const numberedList = /^\d+[\.\)]\s+(.+)$/;
+    const listMarkers = /^[-*•◦▪▫]\s+(.+)$/;
+    const numberedList = /^\d+[.)]\s+(.+)$/;
 
     const flush = () => {
       if (currentParagraph.length > 0) {
@@ -137,7 +137,7 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
 
         {/* Yetenekler */}
         <section>
-          <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">Technical Skills </h2>
+          <h2 className="text-lg font-bold text-blue-800 uppercase tracking-wider mb-2 border-b-2 border-blue-200 pb-1">Technical Skills</h2>
           <div className="flex flex-wrap">
             {skills.map((skill, i) => (
               <span key={skill.id} className="text-sm text-gray-700">
