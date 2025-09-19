@@ -30,9 +30,9 @@ const App: React.FC = () => {
       if (file) {
         try {
           await importCvData(file);
-          alert('CV verileri başarıyla yüklendi!');
+          alert('CV data loaded successfully!');
         } catch (error) {
-          alert(`Dosya yüklenirken hata oluştu: ${(error as Error).message}`);
+          alert(`Error loading file: ${(error as Error).message}`);
         }
       }
     };
@@ -50,7 +50,7 @@ const App: React.FC = () => {
       link.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      alert(`PDF oluşturulurken hata oluştu: ${(err as Error).message}`);
+      alert(`Error creating PDF: ${(err as Error).message}`);
     }
   };
 
@@ -90,23 +90,23 @@ const App: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
-              <button onClick={handleImport} className="flex items-center space-x-1 sm:space-x-2 bg-green-100 text-green-700 border border-green-300 dark:bg-green-900/60 dark:text-green-300 dark:border-green-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-green-200 dark:hover:bg-green-800/60" title="CV Verilerini Yükle (.json)">
+              <button onClick={handleImport} className="flex items-center space-x-1 sm:space-x-2 bg-green-100 text-green-700 border border-green-300 dark:bg-green-900/60 dark:text-green-300 dark:border-green-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-green-200 dark:hover:bg-green-800/60" title="Import CV Data (.json)">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-                <span className="hidden sm:inline">İçe Aktar</span>
+                <span className="hidden sm:inline">Import</span>
               </button>
-              <button onClick={exportCvData} className="flex items-center space-x-1 sm:space-x-2 bg-yellow-100 text-yellow-700 border border-yellow-300 dark:bg-yellow-900/60 dark:text-yellow-300 dark:border-yellow-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-yellow-200 dark:hover:bg-yellow-800/60" title="CV Verilerini Kaydet (.json)">
+              <button onClick={exportCvData} className="flex items-center space-x-1 sm:space-x-2 bg-yellow-100 text-yellow-700 border border-yellow-300 dark:bg-yellow-900/60 dark:text-yellow-300 dark:border-yellow-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-yellow-200 dark:hover:bg-yellow-800/60" title="Export CV Data (.json)">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 12l2 2 4-4" /></svg>
-                <span className="hidden sm:inline">Dışa Aktar</span>
+                <span className="hidden sm:inline">Export</span>
               </button>
-              <button onClick={() => setIsAtsModalOpen(true)} className="flex items-center space-x-1 sm:space-x-2 bg-white text-blue-600 border border-blue-600 dark:bg-gray-700 dark:text-blue-400 dark:border-blue-400 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-blue-50 dark:hover:bg-gray-600" title="ATS Analizi">
+              <button onClick={() => setIsAtsModalOpen(true)} className="flex items-center space-x-1 sm:space-x-2 bg-white text-blue-600 border border-blue-600 dark:bg-gray-700 dark:text-blue-400 dark:border-blue-400 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-blue-50 dark:hover:bg-gray-600" title="ATS Analysis">
                 <AnalysisIcon />
-                <span className="hidden sm:inline">Analiz</span>
+                <span className="hidden sm:inline">Analyze</span>
               </button>
-              <button onClick={handleExportPdf} className="flex items-center space-x-1 sm:space-x-2 bg-indigo-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-indigo-700" title="PDF Olarak İndir">
+              <button onClick={handleExportPdf} className="flex items-center space-x-1 sm:space-x-2 bg-indigo-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-indigo-700" title="Download as PDF">
                 <DownloadIcon />
-                <span className="hidden sm:inline">PDF İndir</span>
+                <span className="hidden sm:inline">Download PDF</span>
               </button>
-              <button onClick={handlePrint} className="flex items-center space-x-1 sm:space-x-2 bg-gray-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-gray-700" title="Yazdır">
+              <button onClick={handlePrint} className="flex items-center space-x-1 sm:space-x-2 bg-gray-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-gray-700" title="Print">
                 <PrintIcon />
               </button>
             </div>
