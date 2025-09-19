@@ -74,10 +74,15 @@ const App: React.FC = () => {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3 flex justify-between items-center">
             <div className="flex items-center space-x-2 sm:space-x-3">
               <BrandIcon />
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
-                ATS CV Builder
-              </h1>
-              <span className="bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">MVP</span>
+
+              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3">
+                <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  <span className="hidden sm:inline">ATS Compatible CV Creator</span>
+                  <span className="sm:hidden">ATS CV</span>
+                </h1>
+                <span className="bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">BETA</span>
+              </div>
+
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
               <button onClick={handleImport} className="flex items-center space-x-1 sm:space-x-2 bg-green-100 text-green-700 border border-green-300 dark:bg-green-900/60 dark:text-green-300 dark:border-green-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-green-200 dark:hover:bg-green-800/60" title="CV Verilerini Yükle (.json)">
