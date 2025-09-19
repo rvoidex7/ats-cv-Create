@@ -37,25 +37,8 @@ export interface CvData {
   experience: Experience[];
   education: Education[];
   skills: Skill[];
-  projects: ProjectItem[];  
-}// ...existing code...
-export const INITIAL_CV_DATA: CvData = {
-  personalInfo: { ... },
-  summary: "...",
-  experience: [ ... ],
-  education: [ ... ],
-  skills: [ ... ],
-  projects: [
-    {
-      id: "prj1",
-      title: "Proje Adı",
-      context: "Kullanılan Teknolojiler",
-      role: "Rolünüz",
-      description: "Proje açıklaması"
-    }
-  ] // <-- Bu alan eksikse ekle!
-};
-// ...existing code...
+  projects: ProjectItem[];
+}
 
 export type CvSection = 'experience' | 'education' | 'skills' | 'projects'; 
 
