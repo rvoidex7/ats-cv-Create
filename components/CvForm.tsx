@@ -77,8 +77,10 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
         </div>
       </Section>
 
+
       {/* Work Experience */}
       <Section title="Work Experience">
+
         {cvData.experience.map((exp) => (
           <div key={exp.id} className="p-4 border dark:border-gray-700 rounded-md mb-4 relative bg-gray-50 dark:bg-gray-800/50">
             <button
@@ -112,6 +114,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
         </button>
       </Section>
 
+
       {/* Projects */}
       <Section title="Projects">
         {cvData.projects.map((prj) => (
@@ -122,6 +125,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
               aria-label="Delete project"
               title="Delete project"
             >
+
               <DeleteIcon />
             </button>
 

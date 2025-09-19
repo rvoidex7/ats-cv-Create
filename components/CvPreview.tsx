@@ -17,6 +17,7 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
     const elements: JSX.Element[] = [];
     let currentParagraph: string[] = [];
 
+
     const listMarkers = /^[\-\*\•\◦\▪\▫]\s+(.+)$/;
     const numberedList = /^\d+[\.\)]\s+(.+)$/;
 
@@ -37,6 +38,7 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
       if (listMarkers.test(line) || numberedList.test(line)) {
         flush();
         const content = line.replace(listMarkers, '$1').replace(numberedList, '$1');
+
         elements.push(
           <div key={`li-${elements.length}`} className="flex items-start mb-1">
             <span className="text-blue-600 mr-2 mt-0.5 text-sm">•</span>
