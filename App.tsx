@@ -3,7 +3,7 @@ import CvPreview from './components/CvPreview';
 import { useCvData } from './hooks/useCvData';
 import { BrandIcon, AnalysisIcon, PrintIcon, DownloadIcon } from './components/IconComponents';
 import AtsAnalysisModal from './components/AtsAnalysisModal';
-import { GlobalToast } from './components/ErrorToast';
+import ErrorToast from './components/ErrorToast';
 import AppSidebar from './components/AppSidebar';
 import EditorPage from './pages/EditorPage';
 import AISettingsPage from './pages/AISettingsPage';
@@ -125,7 +125,7 @@ const App: React.FC = () => {
         onClose={() => setIsAtsModalOpen(false)}
         cvData={cvData}
       />
-      <GlobalToast />
+      <ErrorToast />
     </>
   );
 };
