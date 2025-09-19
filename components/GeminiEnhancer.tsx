@@ -81,10 +81,12 @@ Sadece kısa liste maddelerini döndür.`;
 
   const handleClick = async () => {
     if (!apiKey) {
-      // Fix: Updated error message to not prompt for API key input from the UI.
-      setError('Gemini API anahtarı ayarlanmamış. Lütfen ortam değişkenlerini kontrol edin.');
-      return;
-    }
+// Kullanıcıyı doğru sayfaya yönlendiren hata mesajı
+setError("API anahtarı bulunamadı. Lütfen 'Yapay Zeka Ayarları' sayfasından ekleyin.");
+// Hata mesajını birkaç saniye sonra temizle
+setTimeout(() => setError(null), 3500);
+return;
+}
 
     setIsLoading(true);
     setError(null);

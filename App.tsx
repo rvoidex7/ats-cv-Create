@@ -3,7 +3,7 @@ import CvPreview from './components/CvPreview';
 import { useCvData } from './hooks/useCvData';
 import { BrandIcon, AnalysisIcon, PrintIcon, DownloadIcon } from './components/IconComponents';
 import AtsAnalysisModal from './components/AtsAnalysisModal';
-import ErrorToast from './components/ErrorToast';
+import Toast from './components/Toast';
 import AppSidebar from './components/AppSidebar';
 import EditorPage from './pages/EditorPage';
 import AISettingsPage from './pages/AISettingsPage';
@@ -57,7 +57,14 @@ const App: React.FC = () => {
   const renderPage = () => {
     switch (activePage) {
       case 'editor':
-        return <EditorPage {...cvDataHook} />;
+        return <EditorPage
+          cvData={cvDataHook.cvData}
+          updateField={cvDataHook.updateField}
+          addEntry={cvDataHook.addEntry}
+          removeEntry={cvDataHook.removeEntry}
+          updateEntry={cvDataHook.updateEntry}
+          setCvData={cvDataHook.setCvData}
+        />;
       case 'ai-settings':
         return <AISettingsPage />;
       case 'ai-feed':
@@ -130,7 +137,7 @@ const App: React.FC = () => {
         onClose={() => setIsAtsModalOpen(false)}
         cvData={cvData}
       />
-      <ErrorToast />
+      <Toast />
     </>
   );
 };
