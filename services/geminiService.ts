@@ -40,6 +40,104 @@ export const generateWithGemini = async (apiKey: string, prompt: string): Promis
         return text.trim();
 
     } catch (error) {
+       throw new Error(handleApiError(error));
+    }
+};
+
+const cvDataSchema = {
+    type: Type.OBJECT,
+    properties: {
+        personalInfo: {
+            type: Type.OBJECT,
+            properties: {
+                name: { type: Type.STRING },
+                email: { type: Type.STRING },
+                phone: { type: Type.STRING },
+                linkedin: { type: Type.STRING },
+            },
+            required: ['name']
+        },
+        summary: { type: Type.STRING, description: 'Kişinin profesyonel özeti.' },
+        experience: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    id: { type: Type.STRING },
+                    jobTitle: { type: Type.STRING },
+                    company: { type: Type.STRING },
+                    startDate: { type: Type.STRING },
+                    endDate: { type: Type.STRING },
+                    description: { type: Type.STRING }
+                },
+                required: ['id', 'jobTitle', 'company']
+            }
+        },
+        education: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    id: { type: Type.STRING },
+                    school: { type: Type.STRING },
+                    degree: { type: Type.STRING },
+                    startDate: { type: Type.STRING },
+                    endDate: { type: Type.STRING }
+                },
+                required: ['id', 'school', 'degree']
+            }
+        },
+        skills: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    id: { type: Type.STRING },
+                    name: { type: Type.STRING }
+                },
+                required: ['id', 'name']
+            }
+        },
+    },
+    required: ['personalInfo', 'summary', 'experience', 'education', 'skills']
+};
+
+
+export const parseLinkedInHtmlWithGemini = async (apiKey: string, htmlContent: string): Promise<Partial<CvData>> => {
+    if (!apiKey) {
+        throw new Error("API Anahtarı bulunamadı.");
+    }
+
+    const prompt = `
+        Sen bir HTML ayrıştırma uzmanısın. Görevin, bir LinkedIn profil sayfasından alınmış HTML içeriğini analiz etmek ve bu içerikten yapılandırılmış bir CV verisi çıkarmaktır.
+        Lütfen aşağıdaki HTML içeriğini analiz et ve sonucu belirtilen JSON şemasına uygun olarak Türkçe döndür.
+        Tarihleri "Ay Yıl" (örn: "Ocak 2020") formatında çıkarmaya çalış.
+        Her deneyim, eğitim ve yetenek için benzersiz bir ID oluştur (örn: "experience-1", "skill-2").
+
+        İşte HTML içeriği:
+        \`\`\`html
+        ${htmlContent.substring(0, 30000)} 
+        \`\`\`
+
+        Tüm yanıtın sadece JSON nesnesi olmalıdır. Başka hiçbir metin ekleme.
+    `;
+
+    try {
+        const ai = getGeminiInstance(apiKey);
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: cvDataSchema,
+            }
+        });
+
+        const jsonString = response.text.trim();
+        const result = JSON.parse(jsonString);
+        return result as Partial<CvData>;
+
+    } catch (error) {
         throw new Error(handleApiError(error));
     }
 };
