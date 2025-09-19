@@ -1,13 +1,14 @@
 import React from 'react';
 import CvForm from '../components/CvForm';
-import { CvData, PersonalInfo } from '../types';
+import { CvData, CvSection, PersonalInfo } from '../types';
 
 interface EditorPageProps {
   cvData: CvData;
-  onUpdateField: (field: keyof PersonalInfo, value: string) => void;
-  onAddEntry: (section: 'experience' | 'education' | 'skills') => void;
-  onRemoveEntry: (section: 'experience' | 'education' | 'skills', id: string) => void;
-  onUpdateEntry: (section: 'experience' | 'education' | 'skills', id: string, field: string, value: string) => void;
+  onUpdateField: (section: 'personalInfo', field: keyof PersonalInfo, value: string) => void;
+  onAddEntry: (section: CvSection) => void;
+  onRemoveEntry: (section: CvSection, id: string) => void;
+  onUpdateEntry: (section: CvSection, id: string, field: string, value: string) => void;
+  onUpdateSummary: (summary: string) => void; // Add this
   setCvData: (data: CvData | ((prev: CvData) => CvData)) => void;
 }
 

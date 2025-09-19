@@ -94,6 +94,10 @@ export const useCvData = () => {
     }));
   };
 
+  const updateSummary = (summary: string) => {
+    setCvData((prev) => ({ ...prev, summary }));
+  };
+
   const clearCvData = () => {
     setCvDataInternal(INITIAL_CV_DATA);
     try {
@@ -147,5 +151,5 @@ export const useCvData = () => {
     });
   };
 
-  return { cvData, setCvData, updateField, addEntry, removeEntry, updateEntry, clearCvData, exportCvData, importCvData };
+  return { cvData, setCvData, updateField, addEntry, removeEntry, updateEntry, clearCvData, exportCvData, importCvData, updateSummary };
 };

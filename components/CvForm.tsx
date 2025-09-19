@@ -9,7 +9,7 @@ interface CvFormProps {
   onAddEntry: (section: CvSection) => void;
   onRemoveEntry: (section: CvSection, id: string) => void;
   onUpdateEntry: (section: CvSection, id: string, field: string, value: string) => void;
-  setCvData: React.Dispatch<React.SetStateAction<CvData>>;
+  onUpdateSummary: (summary: string) => void;
 }
 
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
@@ -40,9 +40,9 @@ const Textarea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement> & { l
   </div>
 );
 
-const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRemoveEntry, onUpdateEntry, setCvData }) => {
+const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRemoveEntry, onUpdateEntry, onUpdateSummary }) => {
   const handleSummaryUpdate = (newSummary: string) => {
-    setCvData(prev => ({ ...prev, summary: newSummary }));
+    onUpdateSummary(newSummary);
   };
 
   const handleExperienceDescriptionUpdate = (id: string, newDescription: string) => {
@@ -67,7 +67,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
       {/* Professional Summary */}
       <Section title="Professional Summary">
         <div className="relative">
-          <Textarea label="Summary" value={cvData.summary} onChange={(e) => setCvData({ ...cvData, summary: e.target.value })} />
+          <Textarea label="Summary" value={cvData.summary} onChange={(e) => onUpdateSummary(e.target.value)} />
           <GeminiEnhancer
             promptType="summary"
             context={{ jobTitle: cvData.experience[0]?.jobTitle || 'professional' }}
