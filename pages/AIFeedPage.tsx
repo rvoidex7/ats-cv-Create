@@ -31,13 +31,13 @@ const AIFeedPage: React.FC = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Bilinmeyen bir ağ hatası oluştu.');
+          throw new Error(errorData.error || 'An unknown network error occurred.');
         }
 
         const parsedData: Partial<CvData> = await response.json();
 
-        // Mevcut CV verileriyle gelen verileri birleştir.
-        // Bu, AI'ın döndürmediği alanların kaybolmasını önler.
+        // Merge the incoming data with the existing CV data.
+        // This prevents fields not returned by the AI from being lost.
         setCvData(prevData => ({
           ...prevData,
           ...parsedData,
@@ -51,18 +51,18 @@ const AIFeedPage: React.FC = () => {
           projects: parsedData.projects || prevData.projects,
         }));
 
-        // Kullanıcıyı düzenleyici sayfasına yönlendir
+        // Redirect the user to the editor page
         window.location.href = '/';
 
       } catch (err: any) {
-        setError(err.message || 'Dosya işlenirken bir hata oluştu.');
+        setError(err.message || 'An error occurred while processing the file.');
       } finally {
         setIsLoading(false);
       }
     };
 
     reader.onerror = () => {
-      setError('Dosya okunurken bir hata oluştu.');
+      setError('An error occurred while reading the file.');
       setIsLoading(false);
     };
 
@@ -71,18 +71,18 @@ const AIFeedPage: React.FC = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-md space-y-6 dark:bg-gray-800 animate-fade-in">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Yapay Zeka ile Otomatik Doldur</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Autofill with AI</h1>
 
       <div className="p-4 border rounded-lg dark:border-gray-700">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3">Seçenek 1: LinkedIn Profili ile Doldur</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3">Option 1: Fill with LinkedIn Profile</h2>
         <p className="text-gray-600 dark:text-gray-400 mb-4">
-          LinkedIn profil sayfanızdan "Daha Fazla" {'->'} "PDF olarak kaydet" seçeneği ile indirdiğiniz HTML dosyasını yükleyerek CV formunu otomatik olarak doldurabilirsiniz.
+          You can automatically fill the CV form by uploading the HTML file downloaded from your LinkedIn profile page using the "More" {'->'} "Save to PDF" option.
           <br />
-          <strong className="dark:text-yellow-400">Not:</strong> Bu özellik, sunucu tarafında sizin verilerinizi işleyerek formu dolduran Model 1 mimarisini kullanır.
+          <strong className="dark:text-yellow-400">Note:</strong> This feature uses the Model 1 architecture, which processes your data on the server side to fill out the form.
         </p>
         <div className="mt-4">
           <label htmlFor="linkedin-upload" className={`px-4 py-2 text-white rounded-lg cursor-pointer ${isLoading ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-700'}`}>
-            {isLoading ? 'İşleniyor...' : 'LinkedIn HTML Yükle'}
+            {isLoading ? 'Processing...' : 'Upload LinkedIn HTML'}
           </label>
           <input
             id="linkedin-upload"
@@ -97,11 +97,11 @@ const AIFeedPage: React.FC = () => {
       </div>
 
       <div className="p-4 border rounded-lg dark:border-gray-700">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3">Seçenek 2: ChatGPT ile Doldur</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3">Option 2: Fill with ChatGPT</h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Bu yöntem, "CV Uzmanı GPT" adlı özel bir GPT'ye talimatlar vererek CV içeriğinizi oluşturmanızı ve ardından size özel üretilen bir link ile CV'nizi burada anında görüntülemenizi sağlar.
+          This method allows you to generate your CV content by giving instructions to a special GPT called "CV Expert GPT", and then instantly view your CV here with a custom-generated link.
           <br />
-          <strong className="dark:text-yellow-400">Not:</strong> Bu özellik, Model 2 mimarisini kullanır. Nasıl yapılacağını öğrenmek için "Yapay Zeka Ayarları" sekmesindeki rehberi inceleyebilirsiniz.
+          <strong className="dark:text-yellow-400">Note:</strong> This feature uses the Model 2 architecture. To learn how to use it, you can check the guide in the "AI Settings" tab.
         </p>
       </div>
     </div>

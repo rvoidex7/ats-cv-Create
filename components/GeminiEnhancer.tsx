@@ -22,58 +22,58 @@ const GeminiEnhancer: React.FC<GeminiEnhancerProps> = ({ promptType, context, cu
   const generatePrompt = () => {
     if (promptType === 'summary') {
       if (currentText && currentText.trim()) {
-        return `Aşağıdaki CV özetini daha profesyonel, ATS uyumlu ve etkileyici hale getir. Mevcut içeriği koruyarak dil bilgisi, akıcılık ve profesyonellik açısından iyileştir. 
+        return `Make the following CV summary more professional, ATS-friendly, and impressive. Improve grammar, fluency, and professionalism while preserving the existing content.
 
-ÖNEMLİ FORMAT KURALLARI:
-- Sadece düz metin formatında yanıt ver
-- Hiçbir markdown işareti (**, *, _, vb.) kullanma
-- Paragraflar arasında boş satır bırak
-- Liste öğeleri için "-" işareti kullan
-- Her liste öğesini yeni satıra yaz
-- Alt başlıkları ayrı paragraflarda yaz
-- Orijinal yapıyı ve formatı koru
+IMPORTANT FORMATTING RULES:
+- Respond only in plain text format.
+- Do not use any markdown characters (**, *, _, etc.).
+- Leave a blank line between paragraphs.
+- Use the "-" character for list items.
+- Write each list item on a new line.
+- Write subheadings in separate paragraphs.
+- Maintain the original structure and format.
 
-Mevcut özet:
+Current summary:
 "${currentText}"
 
-Sadece iyileştirilmiş özet metnini döndür, paragraf boşluklarını ve liste formatını koru.`;
+Return only the improved summary text, preserving paragraph spacing and list format.`;
       } else {
-        return `ATS uyumlu bir CV için, "${context.jobTitle}" pozisyonunda deneyimli bir profesyonel için profesyonel bir özet yaz. Özet, anahtar yetenekleri ve kariyer hedeflerini vurgulamalıdır. 
+        return `For an ATS-friendly CV, write a professional summary for an experienced professional in the "${context.jobTitle}" position. The summary should highlight key skills and career goals.
 
-ÖNEMLİ: Sadece düz metin formatında yanıt ver. Hiçbir markdown işareti kullanma. Paragraflar arasında boş satır bırak.
+IMPORTANT: Respond only in plain text format. Do not use any markdown characters. Leave a blank line between paragraphs.
 
-Sadece özet metnini döndür.`;
+Return only the summary text.`;
       }
     }
     if (promptType === 'experience') {
       if (currentText && currentText.trim()) {
-        return `Aşağıdaki iş deneyimi açıklamasını daha profesyonel, ATS uyumlu ve etkileyici hale getir. Aksiyon fiilleri kullan, ölçülebilir sonuçlar ekle ve başarıları vurgula.
+        return `Make the following job experience description more professional, ATS-friendly, and impressive. Use action verbs, add measurable results, and highlight achievements.
 
-ÖNEMLİ FORMAT KURALLARI:
-- Sadece düz metin formatında yanıt ver
-- Hiçbir markdown işareti kullanma
-- KISA VE ÖZ tut (maksimum 3-4 madde)
-- Her madde tek satırda olsun, çok uzun yazma
-- Liste öğeleri için "-" işareti kullan
-- Her liste öğesini yeni satıra yaz
-- Orijinal liste formatını koru ama daha kısa yap
+IMPORTANT FORMATTING RULES:
+- Respond only in plain text format.
+- Do not use any markdown characters.
+- Keep it SHORT AND CONCISE (maximum 3-4 bullet points).
+- Each bullet point should be on a single line, not too long.
+- Use the "-" character for list items.
+- Write each list item on a new line.
+- Maintain the original list format but make it shorter.
 
-Mevcut açıklama:
+Current description:
 "${currentText}"
 
-Sadece iyileştirilmiş ve KISA açıklama metnini döndür, her maddeyi tek satırda tut.`;
+Return only the improved and CONCISE description text, keeping each bullet point on a single line.`;
       } else {
-        return `ATS uyumlu bir CV için, "${context.company}" şirketinde "${context.jobTitle}" pozisyonu için sorumlulukları ve başarıları anlatan KISA ve ÖZ bir liste oluştur. 
+        return `For an ATS-friendly CV, create a SHORT AND CONCISE list of responsibilities and achievements for the "${context.jobTitle}" position at "${context.company}".
 
-ÖNEMLİ KURALLAR:
-- Sadece düz metin formatında yanıt ver
-- Maksimum 3-4 madde yaz
-- Her madde tek satırda olsun, kısa ve öz
-- Her maddeyi "-" ile başlat
-- Aksiyon fiili ile başla
-- Ölçülebilir sonuçlar ekle
+IMPORTANT RULES:
+- Respond only in plain text format.
+- Write a maximum of 3-4 bullet points.
+- Each bullet point should be on a single line, short and concise.
+- Start each bullet point with "-".
+- Start with an action verb.
+- Include measurable results.
 
-Sadece kısa liste maddelerini döndür.`;
+Return only the short list items.`;
       }
     }
     return '';
@@ -81,31 +81,31 @@ Sadece kısa liste maddelerini döndür.`;
 
   const handleClick = async () => {
     if (!apiKey) {
-// Kullanıcıyı doğru sayfaya yönlendiren hata mesajı
-setError("API anahtarı bulunamadı. Lütfen 'Yapay Zeka Ayarları' sayfasından ekleyin.");
-// Hata mesajını birkaç saniye sonra temizle
-setTimeout(() => setError(null), 3500);
-return;
-}
+      // Error message that directs the user to the correct page
+      setError("API key not found. Please add it from the 'AI Settings' page.");
+      // Clear the error message after a few seconds
+      setTimeout(() => setError(null), 3500);
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
     const prompt = generatePrompt();
     if (!prompt) {
-      setError('Geçersiz istek türü.');
+      setError('Invalid request type.');
       setIsLoading(false);
       return;
     }
 
     try {
       const result = await generateWithGemini(apiKey, prompt);
-      // Markdown işaretlerini temizle
+      // Clean up markdown characters
       const cleanedResult = result
         .replace(/\*\*(.*?)\*\*/g, '$1') // **bold** -> bold
         .replace(/\*(.*?)\*/g, '$1')     // *italic* -> italic
         .replace(/_(.*?)_/g, '$1')       // _underline_ -> underline
         .replace(/`(.*?)`/g, '$1')       // `code` -> code
-        .replace(/#{1,6}\s/g, '')        // # başlıkları temizle
+        .replace(/#{1,6}\s/g, '')        // # remove headers
         .trim();
       
       onGeneratedText(cleanedResult);
@@ -124,7 +124,7 @@ return;
         onClick={handleClick}
         disabled={isLoading}
         className="flex items-center justify-center p-2 bg-blue-100 text-blue-600 dark:bg-blue-900/60 dark:text-blue-400 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800/60 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        title="Gemini ile Geliştir"
+        title="Enhance with Gemini"
       >
         {isLoading ? (
           <svg className="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
