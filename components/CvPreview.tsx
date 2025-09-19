@@ -7,6 +7,13 @@ interface CvPreviewProps {
   cvData: CvData;
 }
 
+// üst kısma ekle
+const toHref = (url?: string) =>
+  !url ? "" : url.startsWith("http") ? url : `https://${url}`;
+
+const pretty = (url?: string) =>
+  !url ? "" : url.replace(/^https?:\/\//, "");
+
 const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
   const { personalInfo, summary, experience, education, skills } = cvData;
 
@@ -86,15 +93,34 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
             <span>&bull;</span>
             <span>{personalInfo.email}</span>
           </div>
-          <div className="flex justify-center items-center space-x-4 text-sm text-blue-600 mt-1">
-            <span>{personalInfo.linkedin}</span>
-            {personalInfo.github && (
-              <>
-                <span>&bull;</span>
-                <span>{personalInfo.github}</span>
-              </>
-            )}
-          </div>
+          <div className="flex justify-center items-center flex-wrap gap-4 text-sm text-blue-600 mt-1">
+  {personalInfo.linkedin && (
+    <a
+      href={toHref(personalInfo.linkedin)}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hover:underline break-words"
+    >
+      {pretty(personalInfo.linkedin)}
+    </a>
+  )}
+
+  {personalInfo.linkedin && personalInfo.github && (
+    <span className="text-gray-400 select-none">•</span>
+  )}
+
+  {personalInfo.github && (
+    <a
+      href={toHref(personalInfo.github)}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hover:underline break-words"
+    >
+      {pretty(personalInfo.github)}
+    </a>
+  )}
+</div>
+
         </header>
 
         <section className="mb-6">

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
 import { type CvData } from '../types';
 
 interface CvPdfProps {
@@ -7,6 +7,7 @@ interface CvPdfProps {
 }
 
 const styles = StyleSheet.create({
+  
   page: {
     paddingTop: 32,
     paddingBottom: 32,
@@ -37,14 +38,8 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#4B5563',
   },
-  linkRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 4,
-    color: '#2563EB',
-    fontSize: 10,
-  },
+  linkRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 4, color: '#2563EB', fontSize: 10 },
+    link: { color: '#2563EB', textDecoration: 'none' },
   dotSep: {
     marginHorizontal: 8,
   },
@@ -115,9 +110,16 @@ const styles = StyleSheet.create({
   },
   skillText: {
     fontSize: 11,
-    color: '#374151',
+    color: '#374151'   
   },
 });
+
+const toHref = (url?: string) =>
+  !url ? '' : url.startsWith('http') ? url : `https://${url}`;
+
+const pretty = (url?: string) =>
+  !url ? '' : url.replace(/^https?:\/\//, '');
+
 
 type Block = { type: 'p' | 'li'; content: string };
 
@@ -168,22 +170,41 @@ const CvPdf: React.FC<CvPdfProps> = ({ cvData }) => {
         <View style={styles.header}>
           <Text style={styles.name}>{personalInfo.name} | {personalInfo.jobTitle} </Text>
           <View style={styles.rowCenter}>
-            {personalInfo.address ? <Text style={styles.muted}>{personalInfo.address}</Text> : null}
-            {personalInfo.address && (personalInfo.phone || personalInfo.email) ? (
-              <Text style={[styles.muted, styles.dotSep]}>•</Text>
-            ) : null}
-            {personalInfo.phone ? <Text style={styles.muted}>{personalInfo.phone}</Text> : null}
-            {personalInfo.phone && personalInfo.email ? (
-              <Text style={[styles.muted, styles.dotSep]}>•</Text>
-            ) : null}
-            {personalInfo.email ? <Text style={styles.muted}>{personalInfo.email}</Text> : null}
+           {personalInfo.address ? <Text style={styles.muted}>{personalInfo.address}</Text> : null}
+{personalInfo.address && (personalInfo.phone || personalInfo.email) ? (<Text style={[styles.muted, styles.dotSep]}>•</Text>) : null}
+
+{personalInfo.phone ? (
+  <Link src={`tel:${personalInfo.phone}`} style={styles.muted}>
+    {personalInfo.phone}
+  </Link>
+) : null}
+
+{personalInfo.phone && personalInfo.email ? (<Text style={[styles.muted, styles.dotSep]}>•</Text>) : null}
+
+{personalInfo.email ? (
+  <Link src={`mailto:${personalInfo.email}`} style={styles.muted}>
+    {personalInfo.email}
+  </Link>
+) : null}
+
           </View>
           {(personalInfo.linkedin || personalInfo.github) && (
-            <View style={styles.linkRow}>
-              {personalInfo.linkedin ? <Text>{personalInfo.linkedin}</Text> : null}
-              {personalInfo.linkedin && personalInfo.github ? <Text style={styles.dotSep}>•</Text> : null}
-              {personalInfo.github ? <Text>{personalInfo.github}</Text> : null}
-            </View>
+           <View style={styles.linkRow}>
+  {personalInfo.linkedin ? (
+    <Link src={toHref(personalInfo.linkedin)} style={styles.link}>
+      {pretty(personalInfo.linkedin)}
+    </Link>
+  ) : null}
+
+  {personalInfo.linkedin && personalInfo.github ? <Text style={styles.dotSep}>•</Text> : null}
+
+  {personalInfo.github ? (
+    <Link src={toHref(personalInfo.github)} style={styles.link}>
+      {pretty(personalInfo.github)}
+    </Link>
+  ) : null}
+</View>
+
           )}
         </View>
 
