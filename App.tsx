@@ -59,10 +59,11 @@ const App: React.FC = () => {
       case 'editor':
         return <EditorPage
           cvData={cvDataHook.cvData}
-          updateField={cvDataHook.updateField}
-          addEntry={cvDataHook.addEntry}
-          removeEntry={cvDataHook.removeEntry}
-          updateEntry={cvDataHook.updateEntry}
+          onUpdateField={cvDataHook.updateField}
+          onAddEntry={cvDataHook.addEntry}
+          onRemoveEntry={cvDataHook.removeEntry}
+          onUpdateEntry={cvDataHook.updateEntry}
+          onUpdateSummary={cvDataHook.updateSummary}
           setCvData={cvDataHook.setCvData}
         />;
       case 'ai-settings':
