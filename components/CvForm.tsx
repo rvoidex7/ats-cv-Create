@@ -57,6 +57,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
       <Section title="Kişisel Bilgiler">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label="Ad Soyad" value={cvData.personalInfo.name} onChange={(e) => onUpdateField('personalInfo', 'name', e.target.value)} autoComplete="name" />
+          <Input label="Mesleğiniz" value={cvData.personalInfo.jobTitle} onChange={(e) => onUpdateField('personalInfo', 'jobTitle', e.target.value)} autoComplete="jobTitle" />
           <Input label="E-posta" type="email" value={cvData.personalInfo.email} onChange={(e) => onUpdateField('personalInfo', 'email', e.target.value)} autoComplete="email" />
           <Input label="Telefon" value={cvData.personalInfo.phone} onChange={(e) => onUpdateField('personalInfo', 'phone', e.target.value)} autoComplete="tel" />
           <Input label="Adres" value={cvData.personalInfo.address} onChange={(e) => onUpdateField('personalInfo', 'address', e.target.value)} autoComplete="street-address" />

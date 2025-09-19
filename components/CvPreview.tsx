@@ -78,7 +78,7 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
     <div id="cv-preview" className="bg-white p-8 md:p-12 shadow-lg border border-gray-200 aspect-[210/297] w-full">
       <div className="cv-content">
         <header className="text-center mb-8 border-b pb-4 border-gray-300">
-          <h1 className="text-4xl font-bold text-gray-900 tracking-tight">{personalInfo.name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{personalInfo.name} | {personalInfo.jobTitle} </h1>
           <div className="flex justify-center items-center space-x-4 text-sm text-gray-600 mt-2">
             <span>{personalInfo.address}</span>
             <span>&bull;</span>
