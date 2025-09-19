@@ -127,8 +127,8 @@ function parseSummaryToBlocks(text: string): Block[] {
   const blocks: Block[] = [];
   let currentParagraph: string[] = [];
 
-  const listMarkers = /^[\-\*\•\◦\▪\▫]\s+(.+)$/;
-  const numberedList = /^\d+[\.\)]\s+(.+)$/;
+  const listMarkers = /^[-*•◦▪▫]\s+(.+)$/;
+  const numberedList = /^\d+[.)]\s+(.+)$/;
 
   const flushParagraph = () => {
     if (currentParagraph.length > 0) {
