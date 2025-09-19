@@ -166,7 +166,7 @@ const CvPdf: React.FC<CvPdfProps> = ({ cvData }) => {
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.name}>{personalInfo.name}</Text>
+          <Text style={styles.name}>{personalInfo.name} | {personalInfo.jobTitle} </Text>
           <View style={styles.rowCenter}>
             {personalInfo.address ? <Text style={styles.muted}>{personalInfo.address}</Text> : null}
             {personalInfo.address && (personalInfo.phone || personalInfo.email) ? (
