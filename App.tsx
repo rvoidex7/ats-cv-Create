@@ -53,6 +53,7 @@ const App: React.FC = () => {
   const renderPage = () => {
     switch (activePage) {
       case 'editor':
+
         return <EditorPage
           cvData={cvDataHook.cvData}
           updateField={cvDataHook.updateField}
@@ -61,6 +62,7 @@ const App: React.FC = () => {
           updateEntry={cvDataHook.updateEntry}
           setCvData={cvDataHook.setCvData}
         />;
+
       case 'ai-settings':
         return <AISettingsPage />;
       case 'ai-feed':
