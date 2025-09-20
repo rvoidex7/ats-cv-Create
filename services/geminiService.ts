@@ -40,6 +40,121 @@ export const generateWithGemini = async (apiKey: string, prompt: string): Promis
         return text.trim();
 
     } catch (error) {
+       throw new Error(handleApiError(error));
+    }
+};
+
+const cvDataSchema = {
+    type: Type.OBJECT,
+    properties: {
+        personalInfo: {
+            type: Type.OBJECT,
+            properties: {
+                name: { type: Type.STRING },
+                email: { type: Type.STRING },
+                phone: { type: Type.STRING },
+                linkedin: { type: Type.STRING },
+            },
+            required: ['name']
+        },
+        summary: { type: Type.STRING, description: 'Kişinin profesyonel özeti.' },
+        experience: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    id: { type: Type.STRING },
+                    jobTitle: { type: Type.STRING },
+                    company: { type: Type.STRING },
+                    startDate: { type: Type.STRING },
+                    endDate: { type: Type.STRING },
+                    description: { type: Type.STRING }
+                },
+                required: ['id', 'jobTitle', 'company']
+            }
+        },
+        education: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    id: { type: Type.STRING },
+                    school: { type: Type.STRING },
+                    degree: { type: Type.STRING },
+                    startDate: { type: Type.STRING },
+                    endDate: { type: Type.STRING }
+                },
+                required: ['id', 'school', 'degree']
+            }
+        },
+        skills: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    id: { type: Type.STRING },
+                    name: { type: Type.STRING }
+                },
+                required: ['id', 'name']
+            }
+        },
+        projects: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    id: { type: Type.STRING },
+                    title: { type: Type.STRING },
+                    context: { type: Type.STRING },
+                    role: { type: Type.STRING },
+                    description: { type: Type.STRING }
+                },
+                required: ['id', 'title']
+            }
+        },
+    },
+    required: ['personalInfo', 'summary', 'experience', 'education', 'skills', 'projects']
+};
+
+
+export const parseLinkedInHtmlWithGemini = async (apiKey: string, htmlContent: string): Promise<Partial<CvData>> => {
+    if (!apiKey) {
+        throw new Error("API Anahtarı bulunamadı.");
+    }
+
+    const prompt = `
+SENARYO:
+Sen, yapısal olmayan HTML verilerini ayıklama konusunda uzman bir veri dönüştürme aracısın. Görevin, sana verilen karmaşık bir LinkedIn profil HTML dosyasının içeriğini analiz etmek ve içindeki temel CV bilgilerini (Kişisel Bilgiler, İş Deneyimi, Eğitim, Projeler vb.) temiz, yapılandırılmış bir JSON formatına dönüştürmektir.
+
+KURALLAR:
+- Çıktın SADECE ve SADECE valid bir JSON nesnesi olmalıdır. Başka hiçbir metin ekleme.
+- JSON yapısı, projenin \`CvData\` tipine uygun olmalıdır.
+- **ÖNEMLİ:** Her bir iş deneyimi, eğitim, yetenek ve proje girdisi için \`id\` alanına \`experience-1\`, \`education-123\` gibi benzersiz bir string ata.
+- HTML içinde aradığın bir bölümü bulamazsan, o alanı JSON çıktısına boş bir dizi \`[]\` veya boş metin \`""\` olarak ekle ama asla JSON formatını bozma.
+- Tarihleri ve unvanları mümkün olduğunca temiz bir şekilde ayıkla.
+
+İşte ayıklaman gereken HTML içeriği:
+"""
+${htmlContent}
+"""
+    `;
+
+    try {
+        const ai = getGeminiInstance(apiKey);
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: cvDataSchema,
+            }
+        });
+
+        const jsonString = response.text.trim();
+        const result = JSON.parse(jsonString);
+        return result as Partial<CvData>;
+
+    } catch (error) {
         throw new Error(handleApiError(error));
     }
 };

@@ -1,52 +1,44 @@
-# ATS Uyumlu CV Oluşturucu
+# **ATS Uyumlu Akıllı CV Oluşturucu**
 
-Bu uygulama, Google Gemini AI yardımıyla Başvuru Takip Sistemleri (ATS) için optimize edilmiş profesyonel CV'ler oluşturmanıza yardımcı olur. Modern ve kullanıcı dostu arayüzü sayesinde CV'nizi kolayca oluşturabilir, düzenleyebilir ve yapay zeka destekli önerilerle geliştirebilirsiniz.
+Bu proje, standart CV oluşturucuların ötesine geçerek, kullanıcının dijital kimliğini anlayan ve her başvuru için hiper-kişiselleştirilmiş, otantik kariyer belgeleri üreten yeni nesil bir **"Kişisel Kariyer Stratejisti"** olmayı hedefler.  
+Projenin detaylı mimarisi ve uzun vadeli vizyonu için [AGENTS.md](http://docs.google.com/AGENTS.md) dosyasına göz atabilirsiniz.
 
-## Özellikler
 
-- **Kolay CV Oluşturma:** Kişisel bilgiler, özet, iş deneyimi, eğitim ve yetenekler gibi bölümleri kolayca doldurun.
-- **Gemini AI ile Geliştirme:** Tek tıkla profesyonel özetlerinizi ve iş deneyimi açıklamalarınızı yapay zeka ile daha etkileyici hale getirin.
-- **ATS Uyumluluk Analizi:** CV'nizi bir iş ilanına göre analiz ederek uyumluluk puanı, anahtar kelime karşılaştırması ve somut iyileştirme önerileri alın.
-- **Veri Yönetimi:** CV verilerinizi `.json` formatında kaydedin (dışa aktarın) ve daha sonra tekrar yükleyin (içe aktarın).
-- **PDF Olarak İndirme ve Yazdırma:** Oluşturduğunuz CV'yi tek tıkla PDF olarak indirin veya yazdırın.
-- **Modern Arayüz:** Karanlık/Aydınlık tema desteği ve mobil uyumlu şık bir tasarım.
-- **Hızlı Form Doldurma:** Tarayıcıların otomatik tamamlama özelliği ile formları daha hızlı doldurun.
 
----
 
-## Yeni Eklenenler
 
-- **API Anahtar Yönetimi İyileştirmesi:** API anahtarı artık kullanıcı arayüzü yerine, daha güvenli bir yöntem olan ortam değişkenleri (`environment variables`) üzerinden yönetilmektedir. Bu, hem güvenliği artırır hem de geliştirme sürecini kolaylaştırır.
-- **Gelişmiş ATS Analiz Özelliği:** İş ilanını yapıştırarak CV'nizin ilana ne kadar uygun olduğunu analiz eden, uyumluluk skoru, eşleşen/eksik anahtar kelimeler ve iyileştirme önerileri sunan gelişmiş bir modül eklendi.
-- **Form Otomatik Doldurma:** Tarayıcıların kaydedilmiş bilgilerle formları daha hızlı doldurabilmesi için otomatik tamamlama (`autocomplete`) desteği eklendi.
-- **Performans İyileştirmesi:** Gemini API bağlantısı artık her istekte yeniden oluşturulmuyor, bu da performansı artırıyor ve gereksiz nesne oluşturmayı engelliyor.
-- **Arayüz ve Kullanılabilirlik:** Genel kullanıcı deneyimini iyileştiren tema, ikon ve görsel düzenlemeler yapıldı.
+## **✨ Ana Özellikler (Mevcut Sürüm)**
 
----
+* **Yeni Nesil Arayüz:** Sol tarafta dikey navigasyon menüsü ve sağ tarafta CV'nizin anlık olarak güncellenen canlı önizlemesi ile modern ve kullanıcı dostu bir deneyim.  
+* **🤖 Yapay Zeka Destekli Metin Geliştirme:** "Profesyonel Özet" ve "İş Deneyimi" gibi alanlardaki metinlerinizi tek tıkla Gemini AI ile daha profesyonel ve etkileyici hale getirin.  
+* **📊 Gelişmiş ATS Analizi:** CV'nizi bir iş ilanına göre analiz ederek uyumluluk puanı, anahtar kelime karşılaştırması ve somut iyileştirme önerileri alın.  
+* **📄 Metin Tabanlı PDF Oluşturma:** @react-pdf/renderer sayesinde ATS uyumlu, resim tabanlı olmayan, seçilebilir ve gerçek metinler içeren PDF'ler oluşturun.  
+* **💾 Veri Yönetimi:** CV verilerinizi .json formatında kaydedin (dışa aktarın) ve daha sonra tekrar yükleyin (içe aktarın).
 
-## Ekran Görüntüleri
+## **🖼️ Ekran Görüntüleri**
 
 <div align="center">
-<img width="1374" height="856" alt="image" src="https://github.com/user-attachments/assets/56caf68d-807b-47e1-83ac-e9eaf0e14a8e" />
+<img width="1919" height="1033" alt="Ekran görüntüsü 2025-09-19 213146" src="https://github.com/user-attachments/assets/8aba5e71-7098-4ad1-b335-0ccd555b3e00" />
+
 <img width="601" height="772" alt="image" src="https://github.com/user-attachments/assets/1f0e3898-61ff-43fd-96f4-f5a74ebbdbc4" />
 </div>
 
----
+## **🗺️ Yol Haritası (Yapılacaklar)**
 
-## Yapılacaklar Listesi
+Proje, AGENTS.md'de belirtilen vizyon doğrultusunda geliştirilmeye devam etmektedir. Sıradaki adımlar:
 
-- [ ] Kişisel veri mahremiyetinin arttırılmasına yönelik eklemeler.
-- [ ] Yerel LLM (Büyük Dil Modeli) entegrasyonu seçeneği.
-- [ ] Farklı CV şablonları arasından seçim yapma imkanı.
-- [ ] CV bölümlerini sürükle-bırak ile yeniden sıralama özelliği.
-- [ ] Daha fazla tasarım şablon seçenği.
-- [ ] CV'de hangi kısımların olacağını seçebilme esnekliği.
-- [ ] Güvenli Kişisel bilgiler kasası.
-
----
+* \[ \] **Diğer Platform Entegrasyonları:** "Yapay Zeka Besleme" özelliğine aşağıdaki platformlar için HTML ayrıştırıcıları eklenecek:  
+  * \[ \] GitHub (Yazılımcılar için)  
+  * \[ \] Behance (Tasarımcılar için)  
+  * \[ \] ArtStation (Oyun Sanatçıları için)  
+* \[ \] **ChatGPT Action Entegrasyonu:** Kullanıcıların kendi ChatGPT "hafızalarını" kullanarak CV oluşturmalarını sağlayan "İki Aşamalı Sihir" mimarisinin hayata geçirilmesi.  
+* \[ \] **Şablon & Tasarım Sayfası:** Kullanıcıların farklı CV şablonları arasından seçim yapabilmesi ve yapay zekanın dinamik tasarımlar oluşturabilmesi.  
+* \[ \] **CV Belgelerim Sayfası:** Oluşturulan farklı CV versiyonlarını yönetmek için gelişmiş bir panel.  
+* \[ \] **Vercel'de Yayınlama:** Projenin tüm dünyanın kullanımına açılması.
+* \[ \] **🚀 LinkedIn'den Otomatik Doldurma:** "Yapay Zeka Besleme" sayfasından LinkedIn profilinizin HTML dosyasını yükleyerek CV'nizdeki İş Deneyimi, Eğitim gibi alanları saniyeler içinde otomatik olarak doldurun.  
 
 ## Nasıl Çalıştırılır?
-
+-------
 Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin:
 
 1.  **Bağımlılıkları Yükleyin:**

@@ -22,48 +22,44 @@ const GeminiEnhancer: React.FC<GeminiEnhancerProps> = ({ promptType, context, cu
   const generatePrompt = () => {
     if (promptType === 'summary') {
       if (currentText && currentText.trim()) {
-        return `Aşağıdaki CV özetini daha profesyonel, ATS uyumlu ve etkileyici hale getir. Mevcut içeriği koruyarak dil bilgisi, akıcılık ve profesyonellik açısından iyileştir. 
-
-ÖNEMLİ FORMAT KURALLARI:
-- Sadece düz metin formatında yanıt ver
-- Hiçbir markdown işareti (**, *, _, vb.) kullanma
-- Paragraflar arasında boş satır bırak
-- Liste öğeleri için "-" işareti kullan
-- Her liste öğesini yeni satıra yaz
-- Alt başlıkları ayrı paragraflarda yaz
-- Orijinal yapıyı ve formatı koru
-
-Mevcut özet:
+        return `Make the following CV summary more professional, ATS-friendly, and impressive. Improve grammar, fluency, and professionalism while preserving the existing content.
+IMPORTANT FORMATTING RULES:
+- Respond only in plain text format.
+- Do not use any markdown characters (**, *, _, etc.).
+- Leave a blank line between paragraphs.
+- Use the "-" character for list items.
+- Write each list item on a new line.
+- Write subheadings in separate paragraphs.
+- Maintain the original structure and format.
+Current summary:
 "${currentText}"
 
-Sadece iyileştirilmiş özet metnini döndür, paragraf boşluklarını ve liste formatını koru.`;
+Return only the improved summary text, preserving paragraph spacing and list format.`;
       } else {
-        return `ATS uyumlu bir CV için, "${context.jobTitle}" pozisyonunda deneyimli bir profesyonel için profesyonel bir özet yaz. Özet, anahtar yetenekleri ve kariyer hedeflerini vurgulamalıdır. 
+        return `For an ATS-friendly CV, write a professional summary for an experienced professional in the "${context.jobTitle}" position. The summary should highlight key skills and career goals.
 
-ÖNEMLİ: Sadece düz metin formatında yanıt ver. Hiçbir markdown işareti kullanma. Paragraflar arasında boş satır bırak.
+IMPORTANT: Respond only in plain text format. Do not use any markdown characters. Leave a blank line between paragraphs.
 
-Sadece özet metnini döndür.`;
+Return only the summary text.`;
       }
     }
     if (promptType === 'experience') {
       if (currentText && currentText.trim()) {
-        return `Aşağıdaki iş deneyimi açıklamasını daha profesyonel, ATS uyumlu ve etkileyici hale getir. Aksiyon fiilleri kullan, ölçülebilir sonuçlar ekle ve başarıları vurgula.
-
-ÖNEMLİ FORMAT KURALLARI:
-- Sadece düz metin formatında yanıt ver
-- Hiçbir markdown işareti kullanma
-- KISA VE ÖZ tut (maksimum 3-4 madde)
-- Her madde tek satırda olsun, çok uzun yazma
-- Liste öğeleri için "-" işareti kullan
-- Her liste öğesini yeni satıra yaz
-- Orijinal liste formatını koru ama daha kısa yap
-
-Mevcut açıklama:
+        return `Make the following job experience description more professional, ATS-friendly, and impressive. Use action verbs, add measurable results, and highlight achievements.
+IMPORTANT FORMATTING RULES:
+- Respond only in plain text format.
+- Do not use any markdown characters.
+- Keep it SHORT AND CONCISE (maximum 3-4 bullet points).
+- Each bullet point should be on a single line, not too long.
+- Use the "-" character for list items.
+- Write each list item on a new line.
+- Maintain the original list format but make it shorter.
+Current description:
 "${currentText}"
 
 Sadece iyileştirilmiş ve KISA açıklama metnini döndür, her maddeyi tek satırda tut.`;
       } else {
-        return `ATS uyumlu bir CV için, "${context.company}" şirketinde "${context.jobTitle}" pozisyonu için sorumlulukları ve başarıları anlatan KISA ve ÖZ bir liste oluştur. 
+        return `ATS uyumlu bir CV için, "${context.company}" şirketinde "${context.jobTitle}" pozisyonu için sorumlulukları ve başarıları anlatan KISA ve ÖZ bir liste oluştur.
 
 ÖNEMLİ KURALLAR:
 - Sadece düz metin formatında yanıt ver
@@ -81,10 +77,12 @@ Sadece kısa liste maddelerini döndür.`;
 
   const handleClick = async () => {
     if (!apiKey) {
-      // Fix: Updated error message to not prompt for API key input from the UI.
-      setError('Gemini API anahtarı ayarlanmamış. Lütfen ortam değişkenlerini kontrol edin.');
-      return;
-    }
+// Kullanıcıyı doğru sayfaya yönlendiren hata mesajı
+setError("API anahtarı bulunamadı. Lütfen 'Yapay Zeka Ayarları' sayfasından ekleyin.");
+// Hata mesajını birkaç saniye sonra temizle
+setTimeout(() => setError(null), 3500);
+return;
+}
 
     setIsLoading(true);
     setError(null);

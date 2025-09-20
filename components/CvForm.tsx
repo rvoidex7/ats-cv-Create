@@ -132,7 +132,7 @@ const CvForm: React.FC<CvFormProps> = ({ cvData, onUpdateField, onAddEntry, onRe
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Input
                 label="Project Title"
-                placeholder="e.g., BizYeriz"
+                placeholder="e.g., E-commerce Platform"
                 value={prj.title}
                 onChange={(e) => onUpdateEntry('projects', prj.id, 'title', e.target.value)}
                 autoComplete="organization"

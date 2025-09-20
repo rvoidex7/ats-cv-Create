@@ -1,51 +1,127 @@
-import React from 'react';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 
-const AIFeedPage: React.FC = () => {
+import { useCvData } from '@/hooks/useCvData';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/common/ui/card';
+import { Button } from '@/components/common/ui/button';
+import { Icons } from '@/components/common/Icons';
+import { type CvData } from '@/types';
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      console.log('File selected:', file.name);
-      // Here you would trigger the server-side processing (Model 1)
-      alert(`"${file.name}" yüklendi. Bu özellik yakında aktif olacaktır.`);
-    }
-  };
+export default function AIFeedPage() {
+  const { setCvData } = useCvData();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleFileChange = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      setIsLoading(true);
+      const promise = () =>
+        new Promise<CvData>(async (resolve, reject) => {
+          try {
+            const fileContent = await file.text();
+
+            const response = await fetch('/api/parse-linkedin', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ html: fileContent }),
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(
+                errorData.error || `Server responded with status ${response.status}`,
+              );
+            }
+
+            const parsedData = (await response.json()) as CvData;
+
+            // Mevcut CV verilerini gelen yeni veriyle birleştirerek güncelle
+            setCvData((prevData) => ({
+              ...prevData,
+              personalInfo: {
+                ...prevData.personalInfo,
+                ...parsedData.personalInfo,
+              },
+              summary: parsedData.summary || prevData.summary,
+              experience: parsedData.experience.length
+                ? parsedData.experience
+                : prevData.experience,
+              education: parsedData.education.length
+                ? parsedData.education
+                : prevData.education,
+              skills: parsedData.skills.length
+                ? parsedData.skills
+                : prevData.skills,
+            }));
+
+            resolve(parsedData);
+          } catch (err) {
+            console.error('Failed to parse LinkedIn HTML:', err);
+            reject(err);
+          }
+        });
+
+      toast.promise(promise(), {
+        loading: 'AI is parsing your LinkedIn profile...',
+        success: 'CV data has been successfully imported!',
+        error: (err: Error) =>
+          `Failed to import data: ${err.message || 'Unknown error'}`,
+        finally: () => {
+          setIsLoading(false);
+          // Dosya inputunu sıfırla ki aynı dosya tekrar seçilebilsin
+          event.target.value = '';
+        },
+      });
+    },
+    [setCvData],
+  );
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-md space-y-6 dark:bg-gray-800 animate-fade-in">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Yapay Zeka ile Otomatik Doldur</h1>
-
-      <div className="p-4 border rounded-lg dark:border-gray-700">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3">Seçenek 1: LinkedIn Profili ile Doldur</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          LinkedIn profil sayfanızdan "Daha Fazla" {'->'} "PDF olarak kaydet" seçeneği ile indirdiğiniz HTML dosyasını yükleyerek CV formunu otomatik olarak doldurabilirsiniz.
-          <br />
-          <strong className="dark:text-yellow-400">Not:</strong> Bu özellik, sunucu tarafında sizin verilerinizi işleyerek formu dolduran Model 1 mimarisini kullanır.
-        </p>
-        <div className="mt-4">
-          <label htmlFor="linkedin-upload" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer">
-            LinkedIn HTML Yükle
-          </label>
-          <input
-            id="linkedin-upload"
-            type="file"
-            className="hidden"
-            accept=".html"
-            onChange={handleFileChange}
-          />
+    <Card>
+      <CardHeader>
+        <CardTitle>AI Data Feeds</CardTitle>
+        <CardDescription>
+          Automatically populate your CV by uploading data from your digital platforms.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="flex items-center gap-4 rounded-lg border p-4">
+          <Icons.linkedin className="h-8 w-8 text-[#0A66C2]" />
+          <div className="flex-1">
+            <h3 className="font-semibold">Import from LinkedIn</h3>
+            <p className="text-sm text-muted-foreground">
+              Go to your LinkedIn profile, save the page as HTML, and upload it here.
+            </p>
+          </div>
+          <Button asChild variant="outline" disabled={isLoading}>
+            <label htmlFor="linkedin-upload" className="cursor-pointer">
+              {isLoading ? (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Icons.upload className="mr-2 h-4 w-4" />
+              )}
+              Upload HTML
+              <input
+                id="linkedin-upload"
+                type="file"
+                className="sr-only"
+                accept=".html"
+                onChange={handleFileChange}
+                disabled={isLoading}
+              />
+            </label>
+          </Button>
         </div>
-      </div>
-
-      <div className="p-4 border rounded-lg dark:border-gray-700">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3">Seçenek 2: ChatGPT ile Doldur</h2>
-        <p className="text-gray-600 dark:text-gray-400">
-          Bu yöntem, "CV Uzmanı GPT" adlı özel bir GPT'ye talimatlar vererek CV içeriğinizi oluşturmanızı ve ardından size özel üretilen bir link ile CV'nizi burada anında görüntülemenizi sağlar.
-          <br />
-          <strong className="dark:text-yellow-400">Not:</strong> Bu özellik, Model 2 mimarisini kullanır. Nasıl yapılacağını öğrenmek için "Yapay Zeka Ayarları" sekmesindeki rehberi inceleyebilirsiniz.
-        </p>
-      </div>
-    </div>
+        {/* Diğer platformlar için "Yakında Gelecek" alanları */}
+      </CardContent>
+    </Card>
   );
-};
-
-export default AIFeedPage;
+}
