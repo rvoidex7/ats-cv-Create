@@ -5,7 +5,7 @@ export const INITIAL_CV_DATA: CvData = {
     name: "Your Name",
     jobTitle: "Software Developer",
     email: "email@example.com",
-    phone: "+90 555 123 4567",
+    phone: "+1 (555) 123-4567",
     linkedin: "linkedin.com/in/yourname",
     github: "github.com/yourname",
     address: "City, Country",
