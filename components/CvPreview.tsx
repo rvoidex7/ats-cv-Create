@@ -58,7 +58,7 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
     `${p.title}${p.context ? ` (${p.context})` : ''} | ${p.role}`;
 
   return (
-    <div id="cv-preview" className="bg-white p-8 md:p-12 shadow-lg border border-gray-200 aspect-[210/297] w-full">
+    <div id="cv-preview" lang="en" className="bg-white p-8 md:p-12 shadow-lg border border-gray-200 aspect-[210/297] w-full">
       <div className="cv-content">
         <header className="text-center mb-8 border-b pb-4 border-gray-300">
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">

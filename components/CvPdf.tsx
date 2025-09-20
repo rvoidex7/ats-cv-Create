@@ -4,6 +4,18 @@ import { type CvData } from '../types';
 
 interface CvPdfProps { cvData: CvData; }
 
+
+Font.register({
+  family: 'Roboto',
+  fonts: [
+    { src: '/fonts/Roboto/static/Roboto-Regular.ttf' },
+    { src: '/fonts/Roboto/static/Roboto-Italic.ttf', fontStyle: 'italic' },
+    { src: '/fonts/Roboto/static/Roboto-Bold.ttf', fontWeight: 'bold' },
+    { src: '/fonts/Roboto/static/Roboto-BoldItalic.ttf', fontWeight: 'bold', fontStyle: 'italic' },
+  ],
+});
+
+
 const styles = StyleSheet.create({
   page: { paddingTop: 32, paddingBottom: 32, paddingHorizontal: 36, fontSize: 11, color: '#374151', fontFamily: 'Helvetica' },
   header: { alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#D1D5DB', paddingBottom: 12, marginBottom: 16 },
