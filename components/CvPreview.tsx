@@ -18,8 +18,8 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
     let currentParagraph: string[] = [];
 
 
-    const listMarkers = /^[\-\*\•\◦\▪\▫]\s+(.+)$/;
-    const numberedList = /^\d+[\.\)]\s+(.+)$/;
+    const listMarkers = /^[-*•◦▪▫]\s+(.+)$/;
+    const numberedList = /^\d+[.)]\s+(.+)$/;
 
     const flush = () => {
       if (currentParagraph.length > 0) {

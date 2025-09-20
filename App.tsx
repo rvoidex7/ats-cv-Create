@@ -57,7 +57,15 @@ const App: React.FC = () => {
   const renderPage = () => {
     switch (activePage) {
       case 'editor':
-        return <EditorPage {...cvDataHook} />;
+        return (
+          <EditorPage
+            {...cvDataHook}
+            onUpdateField={cvDataHook.updateField}
+            onAddEntry={cvDataHook.addEntry}
+            onRemoveEntry={cvDataHook.removeEntry}
+            onUpdateEntry={cvDataHook.updateEntry}
+          />
+        );
       case 'ai-settings':
         return <AISettingsPage />;
       case 'ai-feed':
