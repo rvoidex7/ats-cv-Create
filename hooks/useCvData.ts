@@ -1,18 +1,22 @@
-import { useState, useEffect } from 'react';
-import { type CvData, type CvSection, type PersonalInfo, type Experience, type Education, type Skill } from '../types';
-import { INITIAL_CV_DATA } from '../constants';
+import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { type CvData, type CvSection, type PersonalInfo, type Experience, type Education, type Skill, type ProjectItem } from '../types';
+import { INITIAL_CV_DATA_EN, INITIAL_CV_DATA_TR } from '../constants';
 
 const CV_DATA_STORAGE_KEY = 'cv-data';
 
-const loadCvDataFromStorage = (): CvData => {
+const getInitialDataForLang = (lang: string) => {
+  return lang === 'tr' ? INITIAL_CV_DATA_TR : INITIAL_CV_DATA_EN;
+};
+
+const loadCvDataFromStorage = (lang: string): CvData => {
   try {
     const savedData = localStorage.getItem(CV_DATA_STORAGE_KEY);
     if (savedData) {
       const parsedData = JSON.parse(savedData);
       if (parsedData && typeof parsedData === 'object' && parsedData.personalInfo) {
-        // Eksik alanları tamamla
         return {
-          ...INITIAL_CV_DATA,
+          ...getInitialDataForLang(lang),
           ...parsedData,
           projects: parsedData.projects ?? [],
           experience: parsedData.experience ?? [],
@@ -22,25 +26,60 @@ const loadCvDataFromStorage = (): CvData => {
       }
     }
   } catch (error) {
-    console.error('CV verileri localStorage\'dan yüklenirken hata oluştu:', error);
+    console.error('Error loading CV data from localStorage:', error);
   }
-  return INITIAL_CV_DATA;
-};
-
-const saveCvDataToStorage = (cvData: CvData) => {
-  try {
-    localStorage.setItem(CV_DATA_STORAGE_KEY, JSON.stringify(cvData));
-  } catch (error) {
-    console.error('CV verileri localStorage\'a kaydedilirken hata oluştu:', error);
-  }
+  return getInitialDataForLang(lang);
 };
 
 export const useCvData = () => {
-  const [cvData, setCvDataInternal] = useState<CvData>(() => loadCvDataFromStorage());
+  const { i18n } = useTranslation();
+  const [cvData, setCvDataInternal] = useState<CvData>(() => loadCvDataFromStorage(i18n.language));
+  const previousLangRef = useRef(i18n.language);
 
-  // CV verileri her değiştiğinde localStorage'a kaydet
+  // Update CV data with new initial values on language change
   useEffect(() => {
-    saveCvDataToStorage(cvData);
+    const currentLang = i18n.language;
+    const previousLang = previousLangRef.current;
+
+    if (currentLang !== previousLang) {
+      const oldInitialData = getInitialDataForLang(previousLang);
+      const newInitialData = getInitialDataForLang(currentLang);
+
+      setCvDataInternal(currentCvData => {
+        const newCvData = { ...currentCvData };
+
+        // Compare and update summary
+        if (currentCvData.summary === oldInitialData.summary) {
+            newCvData.summary = newInitialData.summary;
+        }
+
+        // Compare and update personal info
+        (Object.keys(newCvData.personalInfo) as Array<keyof PersonalInfo>).forEach(key => {
+            if (currentCvData.personalInfo[key] === oldInitialData.personalInfo[key]) {
+                newCvData.personalInfo[key] = newInitialData.personalInfo[key];
+            }
+        });
+
+        // This is a simplified example. A full implementation would need to handle
+        // arrays of objects (experience, education, etc.) more robustly, potentially
+        // by comparing item by item if IDs match. For this task, we'll focus on summary and personalInfo.
+        // A more complex implementation could be added later if needed.
+
+        return newCvData;
+      });
+
+      previousLangRef.current = currentLang;
+    }
+  }, [i18n.language]);
+
+
+  // Save CV data to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(CV_DATA_STORAGE_KEY, JSON.stringify(cvData));
+    } catch (error) {
+      console.error('Error saving CV data to localStorage:', error);
+    }
   }, [cvData]);
 
   const setCvData = (newData: CvData | ((prev: CvData) => CvData)) => {
@@ -60,22 +99,20 @@ export const useCvData = () => {
 
   const addEntry = (section: CvSection) => {
     const newId = `${section}-${Date.now()}`;
-    setCvData((prev) => {
-      let newEntry;
-      if (section === 'experience') {
-        newEntry = { id: newId, jobTitle: '', company: '', startDate: '', endDate: '', description: '' };
-      } else if (section === 'education') {
-        newEntry = { id: newId, school: '', degree: '', startDate: '', endDate: '' };
-      } else if (section === 'projects') {
-        newEntry = { id: newId, title: '', context: '', role: '', description: '' }; // <-- Bunu ekle!
-      } else {
-        newEntry = { id: newId, name: '' };
-      }
-      return {
-        ...prev,
-        [section]: [...prev[section], newEntry],
-      };
-    });
+    let newEntry: Experience | Education | Skill | ProjectItem;
+    if (section === 'experience') {
+      newEntry = { id: newId, jobTitle: '', company: '', startDate: '', endDate: '', description: '' };
+    } else if (section === 'education') {
+      newEntry = { id: newId, school: '', degree: '', startDate: '', endDate: '' };
+    } else if (section === 'projects') {
+      newEntry = { id: newId, title: '', context: '', role: '', description: '' };
+    } else { // skills
+      newEntry = { id: newId, name: '' };
+    }
+    setCvData((prev) => ({
+      ...prev,
+      [section]: [...prev[section], newEntry],
+    }));
   };
 
   const removeEntry = (section: CvSection, id: string) => {
@@ -85,7 +122,7 @@ export const useCvData = () => {
     }));
   };
 
-  const updateEntry = <T extends Experience | Education | Skill>(section: CvSection, id: string, field: keyof T, value: T[keyof T]) => {
+  const updateEntry = (section: CvSection, id: string, field: string, value: any) => {
     setCvData((prev) => ({
       ...prev,
       [section]: prev[section].map((entry) =>
@@ -95,12 +132,8 @@ export const useCvData = () => {
   };
 
   const clearCvData = () => {
-    setCvDataInternal(INITIAL_CV_DATA);
-    try {
-      localStorage.removeItem('cv-data');
-    } catch (error) {
-      console.error('CV verileri localStorage\'dan silinirken hata oluştu:', error);
-    }
+    const initialData = getInitialDataForLang(i18n.language);
+    setCvDataInternal(initialData);
   };
 
   const exportCvData = () => {
@@ -110,13 +143,13 @@ export const useCvData = () => {
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `cv-verileri-${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `cv-data-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('CV verileri dışa aktarılırken hata oluştu:', error);
+      console.error('Error exporting CV data:', error);
     }
   };
 
@@ -128,21 +161,20 @@ export const useCvData = () => {
           const result = e.target?.result;
           if (typeof result === 'string') {
             const importedData = JSON.parse(result);
-            // Veri yapısının doğruluğunu kontrol et
             if (importedData && typeof importedData === 'object' && importedData.personalInfo) {
               setCvDataInternal(importedData as CvData);
               resolve();
             } else {
-              reject(new Error('Geçersiz dosya formatı'));
+              reject(new Error('Invalid file format.'));
             }
           } else {
-            reject(new Error('Dosya okunamadı'));
+            reject(new Error('Could not read file.'));
           }
         } catch (error) {
-          reject(new Error('JSON dosyası ayrıştırılamadı'));
+          reject(new Error('Could not parse JSON file.'));
         }
       };
-      reader.onerror = () => reject(new Error('Dosya okuma hatası'));
+      reader.onerror = () => reject(new Error('File reading error.'));
       reader.readAsText(file);
     });
   };

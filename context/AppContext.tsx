@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, ReactNode } from 'react';
 
 const API_KEY_STORAGE_KEY = 'gemini-api-key';
 
@@ -28,7 +28,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [apiKey, setApiKeyState] = useState<string | null>(() => {
-    // Sayfa ilk yüklendiğinde localStorage'dan anahtarı oku
+    // Read key from localStorage on initial page load
     try {
       return localStorage.getItem(API_KEY_STORAGE_KEY);
     } catch (e) {
