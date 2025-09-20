@@ -14,13 +14,13 @@ export default async function handler(
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.error('Gemini API key not found in environment variables.');
-    return res.status(500).json({ error: 'Sunucu yapılandırma hatası: API anahtarı eksik.' });
+    return res.status(500).json({ error: 'Server configuration error: API key is missing.' });
   }
 
   try {
     const htmlContent = req.body.html;
     if (!htmlContent || typeof htmlContent !== 'string') {
-      return res.status(400).json({ error: 'İstek gövdesinde "html" alanı bulunmalıdır.' });
+      return res.status(400).json({ error: 'Request body must contain "html" field.' });
     }
 
     const parsedData: Partial<CvData> = await parseLinkedInHtmlWithGemini(apiKey, htmlContent);
@@ -29,7 +29,7 @@ export default async function handler(
 
   } catch (error) {
     console.error('Error parsing LinkedIn HTML:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu.';
-    return res.status(500).json({ error: `Ayrıştırma sırasında bir hata oluştu: ${errorMessage}` });
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+    return res.status(500).json({ error: `An error occurred during parsing: ${errorMessage}` });
   }
 }

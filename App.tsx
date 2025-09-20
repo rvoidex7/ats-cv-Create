@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import CvPreview from './components/CvPreview';
 import { useCvData } from './hooks/useCvData';
 import { BrandIcon, AnalysisIcon, PrintIcon, DownloadIcon } from './components/IconComponents';
@@ -12,6 +13,7 @@ import ComingSoonPage from './pages/ComingSoonPage';
 import CvPdf from './components/CvPdf';
 
 const App: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const cvDataHook = useCvData();
   const { cvData, exportCvData, importCvData } = cvDataHook;
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
@@ -38,13 +40,25 @@ const App: React.FC = () => {
   const handleExportPdf = async () => {
     try {
       const { pdf } = await import('@react-pdf/renderer');
-      const blob = await pdf(<CvPdf cvData={cvData} />).toBlob();
+      const blob = await pdf(<CvPdf cvData={cvData} t={t} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = `cv-${new Date().toISOString().split('T')[0]}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(`Error creating PDF: ${(err as Error).message}`);
+    }
+  };
+
+  const handleViewPdf = async () => {
+    try {
+      const { pdf } = await import('@react-pdf/renderer');
+      const blob = await pdf(<CvPdf cvData={cvData} t={t} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      // No need to revoke, the new tab holds the reference.
     } catch (err) {
       alert(`Error creating PDF: ${(err as Error).message}`);
     }
@@ -90,42 +104,66 @@ const App: React.FC = () => {
 
             </div>
             <div className="flex items-center space-x-1 sm:space-x-2">
-              <button onClick={handleImport} className="flex items-center space-x-1 sm:space-x-2 bg-green-100 text-green-700 border border-green-300 dark:bg-green-900/60 dark:text-green-300 dark:border-green-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-green-200 dark:hover:bg-green-800/60" title="CV Verilerini Yükle (.json)">
+              {/* Data Buttons */}
+              <button onClick={handleImport} className="flex items-center space-x-1 sm:space-x-2 bg-green-100 text-green-700 border border-green-300 dark:bg-green-900/60 dark:text-green-300 dark:border-green-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-green-200 dark:hover:bg-green-800/60" title={t('header.import')}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
-                <span className="hidden sm:inline">Import</span>
+                <span className="hidden sm:inline">{t('header.import')}</span>
               </button>
-              <button onClick={exportCvData} className="flex items-center space-x-1 sm:space-x-2 bg-yellow-100 text-yellow-700 border border-yellow-300 dark:bg-yellow-900/60 dark:text-yellow-300 dark:border-yellow-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-yellow-200 dark:hover:bg-yellow-800/60" title="CV Verilerini Kaydet (.json)">
+              <button onClick={exportCvData} className="flex items-center space-x-1 sm:space-x-2 bg-yellow-100 text-yellow-700 border border-yellow-300 dark:bg-yellow-900/60 dark:text-yellow-300 dark:border-yellow-500 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-yellow-200 dark:hover:bg-yellow-800/60" title={t('header.export')}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 12l2 2 4-4" /></svg>
-                <span className="hidden sm:inline">Export</span>
+                <span className="hidden sm:inline">{t('header.export')}</span>
               </button>
-              <button onClick={() => setIsAtsModalOpen(true)} className="flex items-center space-x-1 sm:space-x-2 bg-white text-blue-600 border border-blue-600 dark:bg-gray-700 dark:text-blue-400 dark:border-blue-400 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-blue-50 dark:hover:bg-gray-600" title="ATS Analizi">
+
+              <div className="border-l border-gray-300 dark:border-gray-600 h-6 mx-1"></div>
+
+              {/* AI Buttons */}
+              <button onClick={() => setIsAtsModalOpen(true)} className="flex items-center space-x-1 sm:space-x-2 bg-white text-blue-600 border border-blue-600 dark:bg-gray-700 dark:text-blue-400 dark:border-blue-400 font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-blue-50 dark:hover:bg-gray-600" title={t('header.analyze')}>
                 <AnalysisIcon />
-                <span className="hidden sm:inline">Analyze</span>
+                <span className="hidden sm:inline">{t('header.analyze')}</span>
               </button>
-              <button onClick={handleExportPdf} className="flex items-center space-x-1 sm:space-x-2 bg-indigo-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-indigo-700" title="PDF Olarak İndir">
+
+              <div className="border-l border-gray-300 dark:border-gray-600 h-6 mx-1"></div>
+
+              {/* PDF Buttons */}
+              <button onClick={handleViewPdf} className="flex items-center space-x-1 sm:space-x-2 bg-indigo-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-indigo-700" title={t('header.view_pdf')}>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                <span className="hidden sm:inline">{t('header.view_pdf')}</span>
+              </button>
+              <button onClick={handleExportPdf} className="flex items-center space-x-1 sm:space-x-2 bg-indigo-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-indigo-700" title={t('header.download_pdf')}>
                 <DownloadIcon />
-                <span className="hidden sm:inline">Download as PDF</span>
+                <span className="hidden sm:inline">{t('header.download_pdf')}</span>
+              </button>
+              <button onClick={() => window.print()} className="flex items-center space-x-1 sm:space-x-2 bg-gray-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-gray-700" title={t('header.print')}>
+                <PrintIcon />
               </button>
 
+              <div className="border-l border-gray-300 dark:border-gray-600 h-6 mx-2"></div>
 
-              <button onClick={() => window.print()} className="flex items-center space-x-1 sm:space-x-2 bg-gray-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-gray-700" title="Print">
-
-                <PrintIcon />
+              {/* Language Switcher */}
+              <button
+                onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'tr' : 'en')}
+                className="flex items-center justify-center w-10 h-10 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold rounded-full text-sm"
+                title="Dili Değiştir / Change Language"
+              >
+                {i18n.language === 'en' ? 'TR' : 'EN'}
               </button>
             </div>
           </div>
         </header>
 
-        <div className="flex-1 flex flex-row overflow-hidden">
-          <div className="flex-shrink-0 w-64 bg-white dark:bg-gray-800 shadow-md no-print z-20">
+        <div className="flex-1 flex flex-row min-h-0">
+          {/* Sidebar */}
+          <div className="flex-shrink-0 w-64 bg-white dark:bg-gray-800 shadow-md no-print z-20 overflow-y-auto">
              <AppSidebar activePage={activePage} setActivePage={setActivePage} />
           </div>
 
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          {/* Main Content */}
+          <main className="flex-1 bg-gray-50 dark:bg-gray-900/50 overflow-y-auto p-4 sm:p-6 lg:p-8">
             {renderPage()}
           </main>
 
-          <div className="w-full lg:w-2/5 bg-gray-200 dark:bg-gray-700 p-4 overflow-y-auto no-print z-10">
+          {/* CV Preview */}
+          <div className="hidden lg:block lg:w-2/5 bg-gray-200 dark:bg-gray-800 p-4 overflow-y-auto no-print z-10">
             <div className="lg:sticky lg:top-4">
               <CvPreview cvData={cvData} />
             </div>
