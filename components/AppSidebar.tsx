@@ -9,13 +9,13 @@ interface AppSidebarProps {
 }
 
 const navItems = [
-  { id: 'editor', label: 'Main Editor', icon: FileText, active: true },
-  { id: 'ai-feed', label: 'AI Feed', icon: Bot, active: true },
-  { id: 'ai-settings', label: 'AI Settings', icon: Settings, active: true },
-  { id: 'key-info', label: 'Key Information', icon: Key, active: false },
-  { id: 'template', label: 'Template & Design', icon: LayoutTemplate, active: false },
-  { id: 'my-docs', label: 'My CV Documents', icon: Folder, active: false },
-  { id: 'job-search', label: 'Job Search', icon: Search, active: false },
+  { id: 'editor', label: 'Ana Editör', icon: FileText, active: true },
+  { id: 'ai-feed', label: 'Yapay Zeka Besleme', icon: Bot, active: true },
+  { id: 'ai-settings', label: 'Yapay Zeka Ayarları', icon: Settings, active: true },
+  { id: 'key-info', label: 'Kilit Bilgiler', icon: Key, active: false },
+  { id: 'template', label: 'Şablon & Tasarım', icon: LayoutTemplate, active: false },
+  { id: 'my-docs', label: 'CV Belgelerim', icon: Folder, active: false },
+  { id: 'job-search', label: 'İş Arama', icon: Search, active: false },
 ];
 
 const AppSidebar: React.FC<AppSidebarProps> = ({ activePage, setActivePage }) => {
@@ -43,7 +43,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ activePage, setActivePage }) =>
                 <span>{item.label}</span>
                 {!item.active && (
                   <span className="ml-auto text-xs bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded-full">
-                    Coming Soon
+                    Yakında
                   </span>
                 )}
               </button>

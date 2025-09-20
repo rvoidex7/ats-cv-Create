@@ -1,8 +1,9 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Link, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
 import { type CvData } from '../types';
 
 interface CvPdfProps { cvData: CvData; }
+
 
 Font.register({
   family: 'Roboto',
@@ -14,10 +15,11 @@ Font.register({
   ],
 });
 
+
 const styles = StyleSheet.create({
-  page: { paddingTop: 32, paddingBottom: 32, paddingHorizontal: 36, fontSize: 11, color: '#374151', fontFamily: 'Roboto' },
+  page: { paddingTop: 32, paddingBottom: 32, paddingHorizontal: 36, fontSize: 11, color: '#374151', fontFamily: 'Helvetica' },
   header: { alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#D1D5DB', paddingBottom: 12, marginBottom: 16 },
-  name: { fontSize: 26, fontWeight: 'bold', color: '#111827', fontFamily: 'Roboto' },
+  name: { fontSize: 26, fontWeight: 'bold', color: '#111827' },
   rowCenter: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 6 },
   muted: { fontSize: 10, color: '#4B5563' },
   linkRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 4, fontSize: 10 },
@@ -26,7 +28,7 @@ const styles = StyleSheet.create({
 
   section: { marginBottom: 14 },
   sectionTitleWrap: { borderBottomWidth: 2, borderBottomColor: '#BFDBFE', paddingBottom: 4, marginBottom: 8 },
-  sectionTitle: { fontSize: 13, fontWeight: 'bold', color: '#1E40AF', textTransform: 'uppercase' },
+  sectionTitle: { fontSize: 13, fontWeight: 'bold', color: '#1E40AF' },
 
   paragraph: { fontSize: 11, color: '#374151', marginBottom: 6, lineHeight: 1.4 },
   listItem: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 },
@@ -142,7 +144,7 @@ const CvPdf: React.FC<CvPdfProps> = ({ cvData }) => {
         {/* Projects */}
         {projects.length > 0 && (
           <View style={styles.section}>
-            <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>Projects</Text></View>
+            <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>PROJECTS</Text></View>
             {projects.map(p => (
               <View key={p.id} style={{ marginBottom: 8 }} wrap={false}>
                 <Text style={styles.projTitle}>{projHeader(p)}</Text>
