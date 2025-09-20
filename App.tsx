@@ -56,10 +56,10 @@ const App: React.FC = () => {
 
         return <EditorPage
           cvData={cvDataHook.cvData}
-          updateField={cvDataHook.updateField}
-          addEntry={cvDataHook.addEntry}
-          removeEntry={cvDataHook.removeEntry}
-          updateEntry={cvDataHook.updateEntry}
+          onUpdateField={cvDataHook.updateField}
+          onAddEntry={cvDataHook.addEntry}
+          onRemoveEntry={cvDataHook.removeEntry}
+          onUpdateEntry={cvDataHook.updateEntry}
           setCvData={cvDataHook.setCvData}
         />;
 
@@ -108,7 +108,7 @@ const App: React.FC = () => {
               </button>
 
 
-              <button onClick={handlePrint} className="flex items-center space-x-1 sm:space-x-2 bg-gray-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-gray-700" title="Print">
+              <button onClick={() => window.print()} className="flex items-center space-x-1 sm:space-x-2 bg-gray-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-gray-700" title="Print">
 
                 <PrintIcon />
               </button>

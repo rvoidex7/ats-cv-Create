@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Link, Font } from '@react-pdf/renderer';
 import { type CvData } from '../types';
 
 interface CvPdfProps { cvData: CvData; }

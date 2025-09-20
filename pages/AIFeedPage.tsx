@@ -1,17 +1,9 @@
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
-import { useCvData } from '@/hooks/useCvData';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/common/ui/card';
-import { Button } from '@/components/common/ui/button';
-import { Icons } from '@/components/common/Icons';
-import { type CvData } from '@/types';
+import { useCvData } from '../hooks/useCvData';
+import { Icons } from '../components/IconComponents';
+import { type CvData } from '../types';
 
 export default function AIFeedPage() {
   const { setCvData } = useCvData();
@@ -85,43 +77,44 @@ export default function AIFeedPage() {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>AI Data Feeds</CardTitle>
-        <CardDescription>
+    <div className="border rounded-lg shadow-sm bg-white">
+      <div className="p-6">
+        <h2 className="text-xl font-bold">AI Data Feeds</h2>
+        <p className="text-gray-500 mt-1">
           Automatically populate your CV by uploading data from your digital platforms.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
+        </p>
+      </div>
+      <div className="p-6 pt-0 space-y-6">
         <div className="flex items-center gap-4 rounded-lg border p-4">
           <Icons.linkedin className="h-8 w-8 text-[#0A66C2]" />
           <div className="flex-1">
             <h3 className="font-semibold">Import from LinkedIn</h3>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-600">
               Go to your LinkedIn profile, save the page as HTML, and upload it here.
             </p>
           </div>
-          <Button asChild variant="outline" disabled={isLoading}>
-            <label htmlFor="linkedin-upload" className="cursor-pointer">
-              {isLoading ? (
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Icons.upload className="mr-2 h-4 w-4" />
-              )}
-              Upload HTML
-              <input
-                id="linkedin-upload"
-                type="file"
-                className="sr-only"
-                accept=".html"
-                onChange={handleFileChange}
-                disabled={isLoading}
-              />
-            </label>
-          </Button>
+          <label 
+            htmlFor="linkedin-upload"
+            className={`inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${isLoading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+          >
+            {isLoading ? (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Icons.upload className="mr-2 h-4 w-4" />
+            )}
+            Upload HTML
+            <input
+              id="linkedin-upload"
+              type="file"
+              className="sr-only"
+              accept=".html"
+              onChange={handleFileChange}
+              disabled={isLoading}
+            />
+          </label>
         </div>
         {/* Diğer platformlar için "Yakında Gelecek" alanları */}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
