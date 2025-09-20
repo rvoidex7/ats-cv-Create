@@ -17,10 +17,6 @@ const App: React.FC = () => {
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
   const [activePage, setActivePage] = useState('editor');
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   const handleImport = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -108,7 +104,7 @@ const App: React.FC = () => {
                 <DownloadIcon />
                 <span className="hidden sm:inline">PDF İndir</span>
               </button>
-              <button onClick={handlePrint} className="flex items-center space-x-1 sm:space-x-2 bg-gray-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-gray-700" title="Yazdır">
+              <button onClick={handleExportPdf} className="flex items-center space-x-1 sm:space-x-2 bg-gray-600 text-white font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-md text-sm hover:bg-gray-700" title="Yazdır">
                 <PrintIcon />
               </button>
             </div>
