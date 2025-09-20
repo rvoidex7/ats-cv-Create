@@ -27,15 +27,9 @@ Projenin detaylı mimarisi ve uzun vadeli vizyonu için [AGENTS.md](http://docs.
 
 Proje, AGENTS.md'de belirtilen vizyon doğrultusunda geliştirilmeye devam etmektedir. Sıradaki adımlar:
 
-* \[ \] **Diğer Platform Entegrasyonları:** "Yapay Zeka Besleme" özelliğine aşağıdaki platformlar için HTML ayrıştırıcıları eklenecek:  
-  * \[ \] GitHub (Yazılımcılar için)  
-  * \[ \] Behance (Tasarımcılar için)  
-  * \[ \] ArtStation (Oyun Sanatçıları için)  
-* \[ \] **ChatGPT Action Entegrasyonu:** Kullanıcıların kendi ChatGPT "hafızalarını" kullanarak CV oluşturmalarını sağlayan "İki Aşamalı Sihir" mimarisinin hayata geçirilmesi.  
-* \[ \] **Şablon & Tasarım Sayfası:** Kullanıcıların farklı CV şablonları arasından seçim yapabilmesi ve yapay zekanın dinamik tasarımlar oluşturabilmesi.  
-* \[ \] **CV Belgelerim Sayfası:** Oluşturulan farklı CV versiyonlarını yönetmek için gelişmiş bir panel.  
-* \[ \] **Vercel'de Yayınlama:** Projenin tüm dünyanın kullanımına açılması.
-* \[ \] **🚀 LinkedIn'den Otomatik Doldurma:** "Yapay Zeka Besleme" sayfasından LinkedIn profilinizin HTML dosyasını yükleyerek CV'nizdeki İş Deneyimi, Eğitim gibi alanları saniyeler içinde otomatik olarak doldurun.  
+Kodlara destek atmak istiyorsanız issues kısmına bakınız
+https://github.com/rvoidex7/ats-cv-Create/issues/15
+
 
 ## Nasıl Çalıştırılır?
 -------
