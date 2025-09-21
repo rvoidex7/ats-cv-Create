@@ -16,6 +16,9 @@ const App: React.FC = () => {
   const { cvData, exportCvData, importCvData } = cvDataHook;
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
   const [activePage, setActivePage] = useState('editor');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
 
   const handlePrint = () => {
     window.print();
@@ -115,18 +118,47 @@ const App: React.FC = () => {
         </header>
 
         <div className="flex-1 flex flex-row overflow-y-hidden">
+          {/* Mobile navigation buttons */}
+          <div className="md:hidden fixed bottom-4 left-4 z-40">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="bg-blue-600 text-white p-3 rounded-full shadow-lg"
+            >
+              Menu
+            </button>
+          </div>
+          <div className="lg:hidden fixed bottom-4 right-4 z-40">
+            <button
+              onClick={() => setIsPreviewOpen(!isPreviewOpen)}
+              className="bg-blue-600 text-white p-3 rounded-full shadow-lg"
+            >
+              Preview
+            </button>
+          </div>
+
           {/* Sol Dikey Navigasyon Menüsü */}
-          <div className="flex-shrink-0 w-64 bg-white dark:bg-gray-800 shadow-md no-print z-20 overflow-y-auto">
+          <div className={`
+            ${isSidebarOpen ? 'block' : 'hidden'} 
+            md:flex flex-shrink-0 w-64 bg-white dark:bg-gray-800 shadow-md no-print z-20 overflow-y-auto
+            fixed md:relative inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            transition-transform duration-300 ease-in-out
+          `}>
             <AppSidebar activePage={activePage} setActivePage={setActivePage} />
           </div>
 
+
           {/* Orta Ana İçerik Alanı */}
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
             {renderPage()}
           </main>
 
           {/* Sağ CV Önizleme Sütunu */}
-          <div className="w-full lg:w-2/5 bg-gray-200 dark:bg-gray-700 p-4 overflow-y-auto no-print z-10">
+          <div className={`
+            ${isPreviewOpen ? 'block' : 'hidden'}
+            lg:block w-full lg:w-2/5 bg-gray-200 dark:bg-gray-700 p-4 overflow-y-auto no-print z-10
+            fixed lg:relative inset-y-0 right-0 transform ${isPreviewOpen ? 'translate-x-0' : 'translate-x-full'}
+            transition-transform duration-300 ease-in-out
+          `}>
             <CvPreview cvData={cvData} />
           </div>
         </div>
