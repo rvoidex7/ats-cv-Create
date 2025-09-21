@@ -119,7 +119,7 @@ const App: React.FC = () => {
 
         <div className="flex-1 flex flex-row overflow-y-hidden">
           {/* Mobile navigation buttons */}
-          <div className="md:hidden fixed bottom-4 left-4 z-40">
+          <div className="md:hidden fixed bottom-10 left-4 z-40">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="bg-blue-600 text-white p-3 rounded-full shadow-lg"
@@ -127,7 +127,7 @@ const App: React.FC = () => {
               Menu
             </button>
           </div>
-          <div className="lg:hidden fixed bottom-4 right-4 z-40">
+          <div className="lg:hidden fixed bottom-10 right-4 z-40">
             <button
               onClick={() => setIsPreviewOpen(!isPreviewOpen)}
               className="bg-blue-600 text-white p-3 rounded-full shadow-lg"
