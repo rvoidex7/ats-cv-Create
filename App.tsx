@@ -138,7 +138,7 @@ const App: React.FC = () => {
 
         <div className="flex-1 flex flex-row overflow-y-hidden">
           {/* Mobile navigation buttons */}
-          <div className="md:hidden fixed bottom-10 left-4 z-40">
+          <div className="lg:hidden fixed bottom-10 left-4 z-40">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="bg-blue-600 text-white p-3 rounded-full shadow-lg"
@@ -158,8 +158,8 @@ const App: React.FC = () => {
           {/* Sol Dikey Navigasyon Menüsü */}
           <div className={`
             ${isSidebarOpen ? 'block' : 'hidden'} 
-            md:flex flex-shrink-0 w-64 bg-white dark:bg-gray-800 shadow-md no-print z-20 overflow-y-auto
-            fixed md:relative inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            lg:flex flex-shrink-0 w-64 bg-white dark:bg-gray-800 shadow-md no-print z-20 overflow-y-auto
+            fixed lg:relative inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:transform-none
             transition-transform duration-300 ease-in-out
           `}>
             <AppSidebar activePage={activePage} setActivePage={setActivePage} />
@@ -167,7 +167,7 @@ const App: React.FC = () => {
 
 
           {/* Orta Ana İçerik Alanı */}
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-20 lg:pb-8">
             {renderPage()}
           </main>
 
@@ -175,7 +175,7 @@ const App: React.FC = () => {
           <div className={`
             ${isPreviewOpen ? 'block' : 'hidden'}
             lg:block w-full lg:w-2/5 bg-gray-200 dark:bg-gray-700 p-4 overflow-y-auto no-print z-10
-            fixed lg:relative inset-y-0 right-0 transform ${isPreviewOpen ? 'translate-x-0' : 'translate-x-full'}
+            fixed lg:relative inset-y-0 right-0 transform ${isPreviewOpen ? 'translate-x-0' : 'translate-x-full'} lg:transform-none
             transition-transform duration-300 ease-in-out
           `}>
             <CvPreview cvData={cvData} />
