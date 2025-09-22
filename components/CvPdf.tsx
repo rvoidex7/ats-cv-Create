@@ -7,26 +7,10 @@ interface CvPdfProps { cvData: CvData; }
 Font.register({
   family: 'Roboto',
   fonts: [
-    {
-      src: 'https://cdn.jsdelivr.net/fontsource/fonts/roboto-flex@latest/latin-ext-400-normal.ttf',
-      fontWeight: 'normal',
-      fontStyle: 'normal',
-    },
-    {
-      src: 'https://cdn.jsdelivr.net/fontsource/fonts/roboto-flex@latest/latin-ext-400-italic.ttf',
-      fontWeight: 'normal',
-      fontStyle: 'italic',
-    },
-    {
-      src: 'https://cdn.jsdelivr.net/fontsource/fonts/roboto-flex@latest/latin-ext-700-normal.ttf',
-      fontWeight: 'bold',
-      fontStyle: 'normal',
-    },
-    {
-      src: 'https://cdn.jsdelivr.net/fontsource/fonts/roboto-flex@latest/latin-ext-700-italic.ttf',
-      fontWeight: 'bold',
-      fontStyle: 'italic',
-    },
+    { src: '/fonts/Roboto/static/Roboto-Regular.ttf', fontWeight: 'normal' },
+    { src: '/fonts/Roboto/static/Roboto-Italic.ttf', fontWeight: 'normal', fontStyle: 'italic' },
+    { src: '/fonts/Roboto/static/Roboto-Bold.ttf', fontWeight: 'bold' },
+    { src: '/fonts/Roboto/static/Roboto-BoldItalic.ttf', fontWeight: 'bold', fontStyle: 'italic' },
   ],
 });
 
