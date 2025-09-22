@@ -85,6 +85,7 @@
     "parsing_linkedin": "AI is parsing your LinkedIn profile...",
     "import_success": "CV data has been successfully imported!",
     "import_error": "Failed to import data",
-    "unknown_error": "Unknown error"
+    "unknown_error": "Unknown error",
+    "api_key_missing": "API Key is not set. Please set it in the AI Settings page before uploading."
   }
 }

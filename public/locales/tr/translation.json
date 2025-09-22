@@ -85,6 +85,7 @@
     "parsing_linkedin": "Yapay zeka LinkedIn profilinizi ayrıştırıyor...",
     "import_success": "CV verileri başarıyla içe aktarıldı!",
     "import_error": "Veri içe aktarılamadı",
-    "unknown_error": "Bilinmeyen hata"
+    "unknown_error": "Bilinmeyen hata",
+    "api_key_missing": "API Anahtarı ayarlanmamış. Lütfen yüklemeden önce Yapay Zeka Ayarları sayfasından anahtarınızı ayarlayın."
   }
 }

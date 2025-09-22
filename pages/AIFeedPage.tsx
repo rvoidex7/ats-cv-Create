@@ -1,26 +1,35 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useContext } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-
+import { AppContext } from '../context/AppContext';
 import { useCvData } from '../hooks/useCvData';
 import { Icons } from '../components/IconComponents';
 import { type CvData } from '../types';
 
-async function parseLinkedInProfile(file: File, setCvData: (data: CvData | ((prev: CvData) => CvData)) => void): Promise<CvData> {
+async function parseLinkedInProfile(apiKey: string, file: File, setCvData: (data: CvData | ((prev: CvData) => CvData)) => void): Promise<CvData> {
   try {
     const fileContent = await file.text();
 
     const response = await fetch('/api/parse-linkedin', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        // Note: Sending API key in header is an option, but for now server uses its own key.
+        // 'Authorization': `Bearer ${apiKey}` 
+      },
       body: JSON.stringify({ html: fileContent }),
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.error || `Server responded with status ${response.status}`,
-      );
+      // Handle cases where the server fails without sending a JSON error body (e.g., timeout)
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText);
+        throw new Error(errorData.error || `Server responded with status ${response.status}`);
+      } catch (e) {
+        // If the response is not JSON, it might be an unhandled server error or timeout
+        throw new Error(`Server failed with status ${response.status}. The response was not valid JSON. This could be a timeout.`);
+      }
     }
 
     const parsedData = (await response.json()) as Partial<CvData>;
@@ -60,20 +69,33 @@ export default function AIFeedPage() {
   const { setCvData } = useCvData();
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
+  const { apiKey } = useContext(AppContext);
 
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (!file) return;
 
+      if (!apiKey) {
+        toast.error(t('ai_feed.api_key_missing'));
+        // Optionally, reset the file input
+        event.target.value = '';
+        return;
+      }
+
       setIsLoading(true);
 
-      const promise = parseLinkedInProfile(file, setCvData);
+      // Pass the apiKey to the parsing function
+      const promise = parseLinkedInProfile(apiKey, file, setCvData);
 
       toast.promise(promise, {
         loading: t('ai_feed.parsing_linkedin'),
         success: t('ai_feed.import_success'),
-        error: (err: Error) => `${t('ai_feed.import_error')}: ${err.message || t('ai_feed.unknown_error')}`,
+        error: (err: Error) => {
+          console.error("Toast Error:", err);
+          // Display the specific error message from the server
+          return `${t('ai_feed.import_error')}: ${err.message || t('ai_feed.unknown_error')}`;
+        },
         finally: () => {
           setIsLoading(false);
           // Reset file input so the same file can be selected again
