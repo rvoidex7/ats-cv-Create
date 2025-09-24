@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/ios": "^7.4.3",
     "@google/genai": "^1.20.0",
     "@google/generative-ai": "^0.12.0",
     "@headlessui/react": "^2.2.8",
@@ -26,6 +29,7 @@
     "tailwind-merge": "^2.2.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.4.3",
     "@types/node": "^20.12.12",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
