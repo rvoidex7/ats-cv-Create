@@ -13,6 +13,7 @@ Font.register({
   fonts: [
     { src: '/fonts/Roboto/static/Roboto-Regular.ttf' },
     { src: '/fonts/Roboto/static/Roboto-Italic.ttf', fontStyle: 'italic' },
+
     { src: '/fonts/Roboto/static/Roboto-Bold.ttf', fontWeight: 'bold' },
     { src: '/fonts/Roboto/static/Roboto-BoldItalic.ttf', fontWeight: 'bold', fontStyle: 'italic' },
   ],
