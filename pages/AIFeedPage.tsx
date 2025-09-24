@@ -1,111 +1,150 @@
-import React, { useState } from 'react';
+import { useCallback, useState, useContext } from 'react';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+import { AppContext } from '../context/AppContext';
 import { useCvData } from '../hooks/useCvData';
-import { CvData } from '../types';
+import { Icons } from '../components/IconComponents';
+import { type CvData } from '../types';
 
-const AIFeedPage: React.FC = () => {
-  const { cvData, setCvData } = useCvData();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+async function parseLinkedInProfile(apiKey: string, file: File, setCvData: (data: CvData | ((prev: CvData) => CvData)) => void): Promise<CvData> {
+  try {
+    const fileContent = await file.text();
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) {
-      return;
+    const response = await fetch('/api/parse-linkedin', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        // Note: Sending API key in header is an option, but for now server uses its own key.
+        // 'Authorization': `Bearer ${apiKey}` 
+      },
+      body: JSON.stringify({ html: fileContent }),
+    });
+
+    if (!response.ok) {
+      // Handle cases where the server fails without sending a JSON error body (e.g., timeout)
+      const errorText = await response.text();
+      try {
+        const errorData = JSON.parse(errorText);
+        throw new Error(errorData.error || `Server responded with status ${response.status}`);
+      } catch (e) {
+        // If the response is not JSON, it might be an unhandled server error or timeout
+        throw new Error(`Server failed with status ${response.status}. The response was not valid JSON. This could be a timeout.`);
+      }
     }
 
-    setIsLoading(true);
-    setError(null);
+    const parsedData = (await response.json()) as Partial<CvData>;
 
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const htmlContent = e.target?.result as string;
+    // Merge the new data with existing CV data
+    setCvData((prevData) => ({
+      ...prevData,
+      personalInfo: {
+        ...prevData.personalInfo,
+        ...parsedData.personalInfo,
+      },
+      summary: parsedData.summary || prevData.summary,
+      experience: parsedData.experience && parsedData.experience.length > 0
+        ? parsedData.experience
+        : prevData.experience,
+      education: parsedData.education && parsedData.education.length > 0
+        ? parsedData.education
+        : prevData.education,
+      skills: parsedData.skills && parsedData.skills.length > 0
+        ? parsedData.skills
+        : prevData.skills,
+      projects: parsedData.projects && parsedData.projects.length > 0
+        ? parsedData.projects
+        : prevData.projects,
+    }));
 
-        const response = await fetch('/api/parse-linkedin', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ html: htmlContent }),
-        });
+    return parsedData as CvData;
+  } catch (err) {
+    console.error('Failed to parse LinkedIn HTML:', err);
+    // Re-throw the error to be caught by toast.promise
+    throw err;
+  }
+}
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'An unknown network error occurred.');
-        }
 
-        const parsedData: Partial<CvData> = await response.json();
+export default function AIFeedPage() {
+  const { setCvData } = useCvData();
+  const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
+  const { apiKey } = useContext(AppContext);
 
-        // Merge the incoming data with the existing CV data.
-        // This prevents fields not returned by the AI from being lost.
-        setCvData(prevData => ({
-          ...prevData,
-          ...parsedData,
-          personalInfo: {
-            ...prevData.personalInfo,
-            ...parsedData.personalInfo,
-          },
-          experience: parsedData.experience || prevData.experience,
-          education: parsedData.education || prevData.education,
-          skills: parsedData.skills || prevData.skills,
-          projects: parsedData.projects || prevData.projects,
-        }));
+  const handleFileChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-        // Redirect the user to the editor page
-        window.location.href = '/';
-
-      } catch (err: any) {
-        setError(err.message || 'An error occurred while processing the file.');
-      } finally {
-        setIsLoading(false);
+      if (!apiKey) {
+        toast.error(t('ai_feed.api_key_missing'));
+        // Optionally, reset the file input
+        event.target.value = '';
+        return;
       }
-    };
 
-    reader.onerror = () => {
-      setError('An error occurred while reading the file.');
-      setIsLoading(false);
-    };
+      setIsLoading(true);
 
-    reader.readAsText(file);
-  };
+      // Pass the apiKey to the parsing function
+      const promise = parseLinkedInProfile(apiKey, file, setCvData);
+
+      toast.promise(promise, {
+        loading: t('ai_feed.parsing_linkedin'),
+        success: t('ai_feed.import_success'),
+        error: (err: Error) => {
+          console.error("Toast Error:", err);
+          // Display the specific error message from the server
+          return `${t('ai_feed.import_error')}: ${err.message || t('ai_feed.unknown_error')}`;
+        },
+        finally: () => {
+          setIsLoading(false);
+          // Reset file input so the same file can be selected again
+          event.target.value = '';
+        },
+      });
+    },
+    [setCvData, t],
+  );
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-md space-y-6 dark:bg-gray-800 animate-fade-in">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Autofill with AI</h1>
-
-      <div className="p-4 border rounded-lg dark:border-gray-700">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3">Option 1: Fill with LinkedIn Profile</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          You can automatically fill the CV form by uploading the HTML file downloaded from your LinkedIn profile page using the "More" {'->'} "Save to PDF" option.
-          <br />
-          <strong className="dark:text-yellow-400">Note:</strong> This feature uses the Model 1 architecture, which processes your data on the server side to fill out the form.
+    <div className="border rounded-lg shadow-sm bg-white dark:bg-gray-800">
+      <div className="p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('ai_feed.title')}</h2>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
+          {t('ai_feed.description')}
         </p>
-        <div className="mt-4">
-          <label htmlFor="linkedin-upload" className={`px-4 py-2 text-white rounded-lg cursor-pointer ${isLoading ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-700'}`}>
-            {isLoading ? 'Processing...' : 'Upload LinkedIn HTML'}
-          </label>
-          <input
-            id="linkedin-upload"
-            type="file"
-            className="hidden"
-            accept=".html"
-            onChange={handleFileChange}
-            disabled={isLoading}
-          />
-        </div>
-        {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
       </div>
-
-      <div className="p-4 border rounded-lg dark:border-gray-700">
-        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-3">Option 2: Fill with ChatGPT</h2>
-        <p className="text-gray-600 dark:text-gray-400">
-          This method allows you to generate your CV content by giving instructions to a special GPT called "CV Expert GPT", and then instantly view your CV here with a custom-generated link.
-          <br />
-          <strong className="dark:text-yellow-400">Note:</strong> This feature uses the Model 2 architecture. To learn how to use it, you can check the guide in the "AI Settings" tab.
-        </p>
+      <div className="p-6 pt-0 space-y-6">
+        <div className="flex items-center gap-4 rounded-lg border p-4 dark:border-gray-700">
+          <Icons.linkedin className="h-8 w-8 text-[#0A66C2]" />
+          <div className="flex-1">
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200">{t('ai_feed.import_linkedin_title')}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {t('ai_feed.import_linkedin_desc')}
+            </p>
+          </div>
+          <label 
+            htmlFor="linkedin-upload"
+            className={`inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 ${isLoading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+          >
+            {isLoading ? (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Icons.upload className="mr-2 h-4 w-4" />
+            )}
+            {t('ai_feed.upload_html')}
+            <input
+              id="linkedin-upload"
+              type="file"
+              className="sr-only"
+              accept=".html"
+              onChange={handleFileChange}
+              disabled={isLoading}
+            />
+          </label>
+        </div>
+        {/* Other platforms can be added here as "Coming Soon" */}
       </div>
     </div>
   );
-};
-
-export default AIFeedPage;
+}

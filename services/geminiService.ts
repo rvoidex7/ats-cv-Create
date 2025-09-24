@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { type CvData, type AtsAnalysisResult } from '../types';
 
-// GoogleGenAI instance'larını cache'le
+// Cache GoogleGenAI instances
 const geminiInstances = new Map<string, GoogleGenAI>();
 
 const getGeminiInstance = (apiKey: string): GoogleGenAI => {
@@ -14,14 +14,14 @@ const getGeminiInstance = (apiKey: string): GoogleGenAI => {
 const handleApiError = (error: any): string => {
     console.error("Gemini API Error:", error);
     if (error.toString().includes('API key not valid')) {
-        return "Sağlanan API Anahtarı geçersiz. Lütfen kontrol edin.";
+        return "The provided API Key is not valid. Please check it.";
     }
-    return "Gemini API ile iletişim kurulamadı. Lütfen daha sonra tekrar deneyin.";
+    return "Could not connect to Gemini API. Please try again later.";
 };
 
 export const generateWithGemini = async (apiKey: string, prompt: string): Promise<string> => {
     if (!apiKey) {
-        throw new Error("API Anahtarı bulunamadı.");
+        throw new Error("API Key not found.");
     }
     
     try {
@@ -34,7 +34,7 @@ export const generateWithGemini = async (apiKey: string, prompt: string): Promis
         const text = response.text;
 
         if (!text) {
-          throw new Error("API'den boş yanıt alındı.");
+          throw new Error("Received an empty response from the API.");
         }
         
         return text.trim();
@@ -57,7 +57,7 @@ const cvDataSchema = {
             },
             required: ['name']
         },
-        summary: { type: Type.STRING, description: 'Kişinin profesyonel özeti.' },
+        summary: { type: Type.STRING, description: "The person's professional summary." },
         experience: {
             type: Type.ARRAY,
             items: {
@@ -98,28 +98,45 @@ const cvDataSchema = {
                 required: ['id', 'name']
             }
         },
+        projects: {
+            type: Type.ARRAY,
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    id: { type: Type.STRING },
+                    title: { type: Type.STRING },
+                    context: { type: Type.STRING },
+                    role: { type: Type.STRING },
+                    description: { type: Type.STRING }
+                },
+                required: ['id', 'title']
+            }
+        },
     },
-    required: ['personalInfo', 'summary', 'experience', 'education', 'skills']
+    required: ['personalInfo', 'summary', 'experience', 'education', 'skills', 'projects']
 };
 
 
 export const parseLinkedInHtmlWithGemini = async (apiKey: string, htmlContent: string): Promise<Partial<CvData>> => {
     if (!apiKey) {
-        throw new Error("API Anahtarı bulunamadı.");
+        throw new Error("API Key not found.");
     }
 
     const prompt = `
-        Sen bir HTML ayrıştırma uzmanısın. Görevin, bir LinkedIn profil sayfasından alınmış HTML içeriğini analiz etmek ve bu içerikten yapılandırılmış bir CV verisi çıkarmaktır.
-        Lütfen aşağıdaki HTML içeriğini analiz et ve sonucu belirtilen JSON şemasına uygun olarak Türkçe döndür.
-        Tarihleri "Ay Yıl" (örn: "Ocak 2020") formatında çıkarmaya çalış.
-        Her deneyim, eğitim ve yetenek için benzersiz bir ID oluştur (örn: "experience-1", "skill-2").
+SCENARIO:
+You are an expert data conversion agent specializing in extracting structured data from unstructured HTML. Your task is to analyze the content of a complex LinkedIn profile HTML file and convert the essential CV information (Personal Info, Work Experience, Education, Projects, etc.) into a clean, structured JSON format.
 
-        İşte HTML içeriği:
-        \`\`\`html
-        ${htmlContent.substring(0, 30000)} 
-        \`\`\`
+RULES:
+- Your output MUST be ONLY a valid JSON object. Do not add any other text.
+- The JSON structure must conform to the project's 'CvData' type.
+- **IMPORTANT:** For each work experience, education, skill, and project entry, assign a unique string to the 'id' field, such as 'experience-1', 'education-123'.
+- If you cannot find a section you are looking for in the HTML, add that field to the JSON output as an empty array '[]' or an empty string "" but never break the JSON format.
+- Extract dates and titles as cleanly as possible.
 
-        Tüm yanıtın sadece JSON nesnesi olmalıdır. Başka hiçbir metin ekleme.
+Here is the HTML content to parse:
+"""
+${htmlContent}
+"""
     `;
 
     try {
@@ -145,22 +162,22 @@ export const parseLinkedInHtmlWithGemini = async (apiKey: string, htmlContent: s
 const analysisSchema = {
     type: Type.OBJECT,
     properties: {
-        matchScore: { type: Type.INTEGER, description: 'CV ve iş ilanı arasındaki eşleşme yüzdesi (0-100).' },
-        summary: { type: Type.STRING, description: 'Analizin kısa bir özeti.' },
+        matchScore: { type: Type.INTEGER, description: 'The match percentage between the CV and the job description (0-100).' },
+        summary: { type: Type.STRING, description: 'A brief summary of the analysis.' },
         matchingKeywords: {
             type: Type.ARRAY,
             items: { type: Type.STRING },
-            description: 'Hem CV\'de hem de iş ilanında bulunan anahtar kelimeler.'
+            description: 'Keywords found in both the CV and the job description.'
         },
         missingKeywords: {
             type: Type.ARRAY,
             items: { type: Type.STRING },
-            description: 'İş ilanında olup CV\'de eksik olan önemli anahtar kelimeler.'
+            description: 'Important keywords from the job description that are missing from the CV.'
         },
         actionableFeedback: {
             type: Type.ARRAY,
             items: { type: Type.STRING },
-            description: 'CV\'yi bu iş ilanı için iyileştirmeye yönelik somut öneriler.'
+            description: 'Concrete suggestions for improving the CV for this job application.'
         }
     },
     required: ['matchScore', 'summary', 'matchingKeywords', 'missingKeywords', 'actionableFeedback']
@@ -169,37 +186,37 @@ const analysisSchema = {
 
 export const analyzeCvWithGemini = async (apiKey: string, cvData: CvData, jobDescription: string): Promise<AtsAnalysisResult> => {
     if (!apiKey) {
-        throw new Error("API Anahtarı bulunamadı.");
+        throw new Error("API Key not found.");
     }
 
     const cvDataString = JSON.stringify({
-        özet: cvData.summary,
-        deneyim: cvData.experience.map(e => ({ pozisyon: e.jobTitle, sirket: e.company, aciklama: e.description })),
-        eğitim: cvData.education.map(e => `${e.degree}, ${e.school}`),
-        yetenekler: cvData.skills.map(s => s.name)
+        summary: cvData.summary,
+        experience: cvData.experience.map(e => ({ position: e.jobTitle, company: e.company, description: e.description })),
+        education: cvData.education.map(e => `${e.degree}, ${e.school}`),
+        skills: cvData.skills.map(s => s.name)
     }, null, 2);
 
     const prompt = `
-        Sen bir Başvuru Takip Sistemi (ATS) uzmanısın. Görevin, sağlanan CV'yi bir iş ilanına göre analiz etmek ve Türkçe olarak yapılandırılmış bir JSON formatında ayrıntılı bir rapor sunmaktır.
+        You are an Application Tracking System (ATS) expert. Your task is to analyze a provided CV against a job description and provide a detailed report in a structured JSON format.
 
-        İşte CV verileri:
+        Here is the CV data:
         \`\`\`json
         ${cvDataString}
         \`\`\`
 
-        İşte iş ilanı:
+        Here is the job description:
         """
         ${jobDescription}
         """
 
-        Lütfen aşağıdaki analizi yap ve sonucu belirtilen JSON şemasına uygun olarak döndür:
-        1.  **Eşleşme Skoru**: CV'nin iş ilanına ne kadar uygun olduğunu yüzde olarak belirt (%0-100).
-        2.  **Özet**: Analizin kısa bir özetini yaz.
-        3.  **Eşleşen Anahtar Kelimeler**: Hem CV'de hem de ilanda bulunan anahtar kelimeleri listele.
-        4.  **Eksik Anahtar Kelimeler**: İlanda olan ama CV'de olmayan önemli anahtar kelimeleri listele.
-        5.  **Eyleme Geçirilebilir Geri Bildirim**: Adayın CV'sini bu pozisyon için nasıl daha iyi hale getirebileceğine dair somut, eyleme geçirilebilir öneriler sun.
+        Please perform the following analysis and return the result according to the specified JSON schema:
+        1.  **Match Score**: Indicate how well the CV matches the job description as a percentage (0-100%).
+        2.  **Summary**: Write a brief summary of the analysis.
+        3.  **Matching Keywords**: List the keywords found in both the CV and the job description.
+        4.  **Missing Keywords**: List the important keywords that are in the job description but not in the CV.
+        5.  **Actionable Feedback**: Provide concrete, actionable suggestions on how the candidate can improve their CV for this position.
 
-        Tüm yanıtın sadece JSON nesnesi olmalıdır. Başka hiçbir metin ekleme.
+        Your entire response must be only the JSON object. Do not add any other text.
     `;
 
     try {

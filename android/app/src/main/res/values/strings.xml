@@ -1,7 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">cv-olusturucu</string>
-    <string name="title_activity_main">cv-olusturucu</string>
-    <string name="package_name">com.atscv.app</string>
-    <string name="custom_url_scheme">com.atscv.app</string>
+
+    <string name="app_name">ats-cv-create</string>
+    <string name="title_activity_main">ats-cv-create</string>
+    <string name="package_name">com.ats.creator</string>
+    <string name="custom_url_scheme">com.ats.creator</string>
+
 </resources>

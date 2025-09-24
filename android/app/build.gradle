@@ -1,10 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "com.atscv.app"
+
+    namespace "com.ats.creator"
     compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.atscv.app"
+        applicationId "com.ats.creator"
+
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

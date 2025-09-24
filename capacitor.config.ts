@@ -1,8 +1,10 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.atscv.app',
-  appName: 'cv-olusturucu',
+
+  appId: 'com.ats.creator',
+  appName: 'ats-cv-create',
+
   webDir: 'dist'
 };
 

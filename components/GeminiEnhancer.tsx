@@ -23,7 +23,6 @@ const GeminiEnhancer: React.FC<GeminiEnhancerProps> = ({ promptType, context, cu
     if (promptType === 'summary') {
       if (currentText && currentText.trim()) {
         return `Make the following CV summary more professional, ATS-friendly, and impressive. Improve grammar, fluency, and professionalism while preserving the existing content.
-
 IMPORTANT FORMATTING RULES:
 - Respond only in plain text format.
 - Do not use any markdown characters (**, *, _, etc.).
@@ -32,7 +31,6 @@ IMPORTANT FORMATTING RULES:
 - Write each list item on a new line.
 - Write subheadings in separate paragraphs.
 - Maintain the original structure and format.
-
 Current summary:
 "${currentText}"
 
@@ -48,7 +46,6 @@ Return only the summary text.`;
     if (promptType === 'experience') {
       if (currentText && currentText.trim()) {
         return `Make the following job experience description more professional, ATS-friendly, and impressive. Use action verbs, add measurable results, and highlight achievements.
-
 IMPORTANT FORMATTING RULES:
 - Respond only in plain text format.
 - Do not use any markdown characters.
@@ -57,23 +54,22 @@ IMPORTANT FORMATTING RULES:
 - Use the "-" character for list items.
 - Write each list item on a new line.
 - Maintain the original list format but make it shorter.
-
 Current description:
 "${currentText}"
 
-Return only the improved and CONCISE description text, keeping each bullet point on a single line.`;
+Sadece iyileştirilmiş ve KISA açıklama metnini döndür, her maddeyi tek satırda tut.`;
       } else {
-        return `For an ATS-friendly CV, create a SHORT AND CONCISE list of responsibilities and achievements for the "${context.jobTitle}" position at "${context.company}".
+        return `ATS uyumlu bir CV için, "${context.company}" şirketinde "${context.jobTitle}" pozisyonu için sorumlulukları ve başarıları anlatan KISA ve ÖZ bir liste oluştur.
 
-IMPORTANT RULES:
-- Respond only in plain text format.
-- Write a maximum of 3-4 bullet points.
-- Each bullet point should be on a single line, short and concise.
-- Start each bullet point with "-".
-- Start with an action verb.
-- Include measurable results.
+ÖNEMLİ KURALLAR:
+- Sadece düz metin formatında yanıt ver
+- Maksimum 3-4 madde yaz
+- Her madde tek satırda olsun, kısa ve öz
+- Her maddeyi "-" ile başlat
+- Aksiyon fiili ile başla
+- Ölçülebilir sonuçlar ekle
 
-Return only the short list items.`;
+Sadece kısa liste maddelerini döndür.`;
       }
     }
     return '';
@@ -81,31 +77,31 @@ Return only the short list items.`;
 
   const handleClick = async () => {
     if (!apiKey) {
-      // Error message that directs the user to the correct page
-      setError("API key not found. Please add it from the 'AI Settings' page.");
-      // Clear the error message after a few seconds
-      setTimeout(() => setError(null), 3500);
-      return;
-    }
+// Kullanıcıyı doğru sayfaya yönlendiren hata mesajı
+setError("API anahtarı bulunamadı. Lütfen 'Yapay Zeka Ayarları' sayfasından ekleyin.");
+// Hata mesajını birkaç saniye sonra temizle
+setTimeout(() => setError(null), 3500);
+return;
+}
 
     setIsLoading(true);
     setError(null);
     const prompt = generatePrompt();
     if (!prompt) {
-      setError('Invalid request type.');
+      setError('Geçersiz istek türü.');
       setIsLoading(false);
       return;
     }
 
     try {
       const result = await generateWithGemini(apiKey, prompt);
-      // Clean up markdown characters
+      // Markdown işaretlerini temizle
       const cleanedResult = result
         .replace(/\*\*(.*?)\*\*/g, '$1') // **bold** -> bold
         .replace(/\*(.*?)\*/g, '$1')     // *italic* -> italic
         .replace(/_(.*?)_/g, '$1')       // _underline_ -> underline
         .replace(/`(.*?)`/g, '$1')       // `code` -> code
-        .replace(/#{1,6}\s/g, '')        // # remove headers
+        .replace(/#{1,6}\s/g, '')        // # başlıkları temizle
         .trim();
       
       onGeneratedText(cleanedResult);
@@ -124,7 +120,7 @@ Return only the short list items.`;
         onClick={handleClick}
         disabled={isLoading}
         className="flex items-center justify-center p-2 bg-blue-100 text-blue-600 dark:bg-blue-900/60 dark:text-blue-400 rounded-full hover:bg-blue-200 dark:hover:bg-blue-800/60 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-        title="Enhance with Gemini"
+        title="Gemini ile Geliştir"
       >
         {isLoading ? (
           <svg className="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

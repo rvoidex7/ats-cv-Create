@@ -1,23 +1,29 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Link, Font } from '@react-pdf/renderer';
+import { TFunction } from 'i18next';
 import { type CvData } from '../types';
 
-interface CvPdfProps { cvData: CvData; }
+interface CvPdfProps {
+  cvData: CvData;
+  t: TFunction;
+}
 
 Font.register({
   family: 'Roboto',
   fonts: [
-    { src: '/fonts/Roboto/static/Roboto-Regular.ttf', fontWeight: 'normal' },
-    { src: '/fonts/Roboto/static/Roboto-Italic.ttf', fontWeight: 'normal', fontStyle: 'italic' },
+    { src: '/fonts/Roboto/static/Roboto-Regular.ttf' },
+    { src: '/fonts/Roboto/static/Roboto-Italic.ttf', fontStyle: 'italic' },
+
     { src: '/fonts/Roboto/static/Roboto-Bold.ttf', fontWeight: 'bold' },
     { src: '/fonts/Roboto/static/Roboto-BoldItalic.ttf', fontWeight: 'bold', fontStyle: 'italic' },
   ],
 });
 
+
 const styles = StyleSheet.create({
-  page: { paddingTop: 32, paddingBottom: 32, paddingHorizontal: 36, fontSize: 11, color: '#374151', fontFamily: 'Roboto' },
+  page: { paddingTop: 32, paddingBottom: 32, paddingHorizontal: 36, fontSize: 11, color: '#374151', fontFamily: 'Helvetica' },
   header: { alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#D1D5DB', paddingBottom: 12, marginBottom: 16 },
-  name: { fontSize: 26, fontWeight: 'bold', color: '#111827', fontFamily: 'Roboto' },
+  name: { fontSize: 26, fontWeight: 'bold', color: '#111827' },
   rowCenter: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 6 },
   muted: { fontSize: 10, color: '#4B5563' },
   linkRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 4, fontSize: 10 },
@@ -78,7 +84,7 @@ function parseSummaryToBlocks(text: string): Block[] {
   return blocks;
 }
 
-const CvPdf: React.FC<CvPdfProps> = ({ cvData }) => {
+const CvPdf: React.FC<CvPdfProps> = ({ cvData, t }) => {
   const { personalInfo, summary, experience, education, skills, projects } = cvData;
   const summaryBlocks = parseSummaryToBlocks(summary);
 
@@ -109,7 +115,7 @@ const CvPdf: React.FC<CvPdfProps> = ({ cvData }) => {
 
         {/* Özet */}
         <View style={styles.section}>
-          <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>Professional Summary</Text></View>
+          <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>{t('preview.summary_title')}</Text></View>
           {summaryBlocks.length === 0
             ? <Text style={styles.paragraph}></Text>
             : summaryBlocks.map((b, i) =>
@@ -122,7 +128,7 @@ const CvPdf: React.FC<CvPdfProps> = ({ cvData }) => {
 
         {/* İş Deneyimi */}
         <View style={styles.section}>
-          <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>Work Experience</Text></View>
+          <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>{t('preview.experience_title')}</Text></View>
           {experience.map(exp => (
             <View key={exp.id} style={styles.expItem} wrap={false}>
               <View style={styles.expHeader}>
@@ -142,7 +148,7 @@ const CvPdf: React.FC<CvPdfProps> = ({ cvData }) => {
         {/* Projects */}
         {projects.length > 0 && (
           <View style={styles.section}>
-            <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>Projects</Text></View>
+            <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>{t('preview.projects_title')}</Text></View>
             {projects.map(p => (
               <View key={p.id} style={{ marginBottom: 8 }} wrap={false}>
                 <Text style={styles.projTitle}>{projHeader(p)}</Text>
@@ -158,7 +164,7 @@ const CvPdf: React.FC<CvPdfProps> = ({ cvData }) => {
 
         {/* Eğitim */}
         <View style={styles.section}>
-          <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>Education</Text></View>
+          <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>{t('preview.education_title')}</Text></View>
           {education.map(edu => (
             <View key={edu.id} style={{ marginBottom: 8 }}>
               <View style={styles.expHeader}>
@@ -172,7 +178,7 @@ const CvPdf: React.FC<CvPdfProps> = ({ cvData }) => {
 
         {/* Yetenekler */}
         <View style={styles.section}>
-          <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>Technical Skills</Text></View>
+          <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>{t('preview.skills_title')}</Text></View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {skills.map((s, i) => (
               <Text key={s.id} style={{ fontSize: 11, color: '#374151' }}>
