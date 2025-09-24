@@ -8,6 +8,7 @@ interface EditorPageProps {
   onAddEntry: (section: CvSection) => void; // <-- Düzeltildi
   onRemoveEntry: (section: CvSection, id: string) => void; // <-- Düzeltildi
   onUpdateEntry: (section: CvSection, id: string, field: string, value: string) => void; // <-- Düzeltildi
+  onUpdateSummary: (value: string) => void;
   setCvData: (data: CvData | ((prev: CvData) => CvData)) => void;
 }
 

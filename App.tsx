@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import CvPreview from './components/CvPreview';
 import { useCvData } from './hooks/useCvData';
 import { BrandIcon, AnalysisIcon, PrintIcon, DownloadIcon } from './components/IconComponents';
@@ -12,6 +13,7 @@ import ComingSoonPage from './pages/ComingSoonPage';
 import CvPdf from './components/CvPdf';
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   const cvDataHook = useCvData();
   const { cvData, exportCvData, importCvData } = cvDataHook;
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
@@ -46,7 +48,7 @@ const App: React.FC = () => {
   const handleExportPdf = async () => {
     try {
       const { pdf } = await import('@react-pdf/renderer');
-      const blob = await pdf(<CvPdf cvData={cvData} />).toBlob();
+      const blob = await pdf(<CvPdf cvData={cvData} t={t} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -67,7 +69,7 @@ const App: React.FC = () => {
           onAddEntry={cvDataHook.addEntry}
           onRemoveEntry={cvDataHook.removeEntry}
           onUpdateEntry={cvDataHook.updateEntry}
-          onUpdateSummary={cvDataHook.updateSummary}
+          onUpdateSummary={(cvDataHook as any).updateSummary}
           setCvData={cvDataHook.setCvData}
         />;
       case 'ai-settings':

@@ -131,6 +131,10 @@ export const useCvData = () => {
     }));
   };
 
+  const updateSummary = (value: string) => {
+    setCvData((prev) => ({ ...prev, summary: value }));
+  };
+
   const clearCvData = () => {
     const initialData = getInitialDataForLang(i18n.language);
     setCvDataInternal(initialData);
@@ -179,5 +183,5 @@ export const useCvData = () => {
     });
   };
 
-  return { cvData, setCvData, updateField, addEntry, removeEntry, updateEntry, clearCvData, exportCvData, importCvData };
+  return { cvData, setCvData, updateField, addEntry, removeEntry, updateEntry, updateSummary, clearCvData, exportCvData, importCvData };
 };
