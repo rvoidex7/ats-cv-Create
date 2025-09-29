@@ -2,6 +2,10 @@ import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Link, Font } from '@react-pdf/renderer';
 import { TFunction } from 'i18next';
 import { type CvData } from '../types';
+import RobotoRegular from '/fonts/Roboto/static/Roboto-Regular.ttf';
+import RobotoItalic from '/fonts/Roboto/static/Roboto-Italic.ttf';
+import RobotoBold from '/fonts/Roboto/static/Roboto-Bold.ttf';
+import RobotoBoldItalic from '/fonts/Roboto/static/Roboto-BoldItalic.ttf';
 
 interface CvPdfProps {
   cvData: CvData;
@@ -11,41 +15,41 @@ interface CvPdfProps {
 Font.register({
   family: 'Roboto',
   fonts: [
-    { src: '/fonts/Roboto/static/Roboto-Regular.ttf' },
-    { src: '/fonts/Roboto/static/Roboto-Italic.ttf', fontStyle: 'italic' },
-
-    { src: '/fonts/Roboto/static/Roboto-Bold.ttf', fontWeight: 'bold' },
-    { src: '/fonts/Roboto/static/Roboto-BoldItalic.ttf', fontWeight: 'bold', fontStyle: 'italic' },
+    { src: RobotoRegular },
+    { src: RobotoItalic, fontStyle: 'italic' },
+    { src: RobotoBold, fontWeight: 'bold' },
+    { src: RobotoBoldItalic, fontWeight: 'bold', fontStyle: 'italic' },
   ],
 });
 
 
 const styles = StyleSheet.create({
-  page: { paddingTop: 32, paddingBottom: 32, paddingHorizontal: 36, fontSize: 11, color: '#374151', fontFamily: 'Helvetica' },
+  page: { paddingTop: 32, paddingBottom: 32, paddingHorizontal: 36, fontSize: 11, color: '#374151', fontFamily: 'Roboto' },
   header: { alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#D1D5DB', paddingBottom: 12, marginBottom: 16 },
-  name: { fontSize: 26, fontWeight: 'bold', color: '#111827' },
+  name: { fontSize: 26, fontWeight: 'bold', color: '#111827', fontFamily: 'Roboto' },
   rowCenter: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 6 },
-  muted: { fontSize: 10, color: '#4B5563' },
+  muted: { fontSize: 10, color: '#4B5563', fontFamily: 'Roboto' },
   linkRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 4, fontSize: 10 },
-  link: { color: '#2563EB', textDecoration: 'none' },
-  dotSep: { marginHorizontal: 8 },
+  link: { color: '#2563EB', textDecoration: 'none', fontFamily: 'Roboto' },
+  dotSep: { marginHorizontal: 8, fontFamily: 'Roboto' },
 
   section: { marginBottom: 14 },
   sectionTitleWrap: { borderBottomWidth: 2, borderBottomColor: '#BFDBFE', paddingBottom: 4, marginBottom: 8 },
-  sectionTitle: { fontSize: 13, fontWeight: 'bold', color: '#1E40AF', textTransform: 'uppercase' },
+  sectionTitle: { fontSize: 13, fontWeight: 'bold', color: '#1E40AF', textTransform: 'uppercase', fontFamily: 'Roboto' },
 
-  paragraph: { fontSize: 11, color: '#374151', marginBottom: 6, lineHeight: 1.4 },
+  paragraph: { fontSize: 11, color: '#374151', marginBottom: 6, lineHeight: 1.4, fontFamily: 'Roboto' },
   listItem: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 4 },
-  bullet: { width: 10, color: '#2563EB', marginTop: 1 },
-  listText: { flex: 1, fontSize: 11, color: '#374151', lineHeight: 1.4 },
+  bullet: { width: 10, color: '#2563EB', marginTop: 1, fontFamily: 'Roboto' },
+  listText: { flex: 1, fontSize: 11, color: '#374151', lineHeight: 1.4, fontFamily: 'Roboto' },
 
   expItem: { marginBottom: 10 },
   expHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  jobTitle: { fontSize: 12, fontWeight: 'bold', color: '#1F2937' },
-  dates: { fontSize: 10, color: '#4B5563' },
-  company: { fontSize: 11, fontStyle: 'italic', color: '#4B5563', marginTop: 2 },
+  jobTitle: { fontSize: 12, fontWeight: 'bold', color: '#1F2937', fontFamily: 'Roboto' },
+  dates: { fontSize: 10, color: '#4B5563', fontFamily: 'Roboto' },
+  company: { fontSize: 11, fontStyle: 'italic', color: '#4B5563', marginTop: 2, fontFamily: 'Roboto' },
 
-  projTitle: { fontSize: 12, fontWeight: 'bold', color: '#1E40AF', marginBottom: 2 },
+  projTitle: { fontSize: 12, fontWeight: 'bold', color: '#1E40AF', marginBottom: 2, fontFamily: 'Roboto' },
+  skillText: { fontSize: 11, color: '#374151', fontFamily: 'Roboto' },
 });
 
 const toHref = (url?: string) => !url ? '' : url.startsWith('http') ? url : `https://${url}`;
@@ -181,7 +185,7 @@ const CvPdf: React.FC<CvPdfProps> = ({ cvData, t }) => {
           <View style={styles.sectionTitleWrap}><Text style={styles.sectionTitle}>{t('preview.skills_title')}</Text></View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {skills.map((s, i) => (
-              <Text key={s.id} style={{ fontSize: 11, color: '#374151' }}>
+              <Text key={s.id} style={styles.skillText}>
                 {s.name}{i < skills.length - 1 ? ', ' : ''}
               </Text>
             ))}
