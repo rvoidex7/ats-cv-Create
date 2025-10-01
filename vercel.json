@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/parse-linkedin.ts": {
-      "maxDuration": 60
-    }
-  }
-}
