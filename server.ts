@@ -39,20 +39,23 @@ interface CvData {
 function extractTextFromHtml(htmlContent: string): string {
   console.log('[server] Starting HTML text extraction with JSDOM...');
   const dom = new JSDOM(htmlContent);
-  const body = dom.window.document.querySelector('body');
+  const doc = dom.window.document;
 
-  if (body) {
-    // Remove script and style elements
-    const scripts = body.querySelectorAll('script, style, noscript, svg');
-    scripts.forEach(item => item.remove());
+  // Try to find the main content element first, fallback to body
+  const mainContent = doc.querySelector('.scaffold-layout__main') || doc.querySelector('body');
 
-    let text = body.textContent || "";
+  if (mainContent) {
+    // Remove script, style, and other irrelevant elements
+    const elementsToRemove = mainContent.querySelectorAll('script, style, noscript, svg, header, footer, nav, aside');
+    elementsToRemove.forEach(item => item.remove());
+
+    let text = mainContent.textContent || "";
     text = text.replace(/\s+/g, ' ').trim();
     console.log('[server] HTML text extraction complete.');
     return text;
   }
 
-  console.log('[server] No body element found. Returning empty string.');
+  console.log('[server] No main content or body element found. Returning empty string.');
   return '';
 }
 

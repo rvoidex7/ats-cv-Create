@@ -10,12 +10,10 @@ async function parseLinkedInProfile(apiKey: string, file: File, setCvData: (data
   try {
     const fileContent = await file.text();
 
-    const response = await fetch('/api/parse-linkedin', {
+    const response = await fetch('http://localhost:3001/api/parse-linkedin', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
-        // Note: Sending API key in header is an option, but for now server uses its own key.
-        // 'Authorization': `Bearer ${apiKey}` 
       },
       body: JSON.stringify({ html: fileContent }),
     });
