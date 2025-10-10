@@ -2,11 +2,20 @@ import { useCallback, useState, useContext } from 'react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { AppContext } from '../context/AppContext';
-import { useCvData } from '../hooks/useCvData';
 import { Icons } from '../components/IconComponents';
 import { type CvData } from '../types';
 
-async function parseLinkedInProfile(apiKey: string, file: File, setCvData: (data: CvData | ((prev: CvData) => CvData)) => void): Promise<CvData> {
+type AIFeedPageProps = {
+  setCvData: (data: CvData | ((prev: CvData) => CvData)) => void;
+  onImported?: () => void;
+};
+
+async function parseLinkedInProfile(
+  apiKey: string,
+  file: File,
+  setCvData: (data: CvData | ((prev: CvData) => CvData)) => void,
+  onImported?: () => void,
+): Promise<CvData> {
   try {
     const fileContent = await file.text();
 
@@ -37,29 +46,66 @@ async function parseLinkedInProfile(apiKey: string, file: File, setCvData: (data
 
     const parsedData = (await response.json()) as Partial<CvData>;
 
-    // Merge the new data with existing CV data
-    setCvData((prevData) => ({
-      ...prevData,
-      personalInfo: {
-        ...prevData.personalInfo,
-        ...parsedData.personalInfo,
-      },
-      summary: parsedData.summary || prevData.summary,
-      experience: parsedData.experience && parsedData.experience.length > 0
-        ? parsedData.experience
-        : prevData.experience,
-      education: parsedData.education && parsedData.education.length > 0
-        ? parsedData.education
-        : prevData.education,
-      skills: parsedData.skills && parsedData.skills.length > 0
-        ? parsedData.skills
-        : prevData.skills,
-      projects: parsedData.projects && parsedData.projects.length > 0
-        ? parsedData.projects
-        : prevData.projects,
-    }));
+    console.debug('[parseLinkedInProfile] Parsed data received:', parsedData);
 
-    return parsedData as CvData;
+    const nextCvData: CvData = {
+      personalInfo: {
+        name: parsedData.personalInfo?.name ?? '',
+        jobTitle: parsedData.personalInfo?.jobTitle ?? '',
+        email: parsedData.personalInfo?.email ?? '',
+        phone: parsedData.personalInfo?.phone ?? '',
+        linkedin: parsedData.personalInfo?.linkedin ?? '',
+        github: parsedData.personalInfo?.github ?? '',
+        address: parsedData.personalInfo?.address ?? '',
+      },
+      summary: parsedData.summary ?? '',
+      experience: Array.isArray(parsedData.experience)
+        ? parsedData.experience.map((exp, idx) => ({
+            id: exp?.id ?? `experience-${idx + 1}`,
+            jobTitle: exp?.jobTitle ?? '',
+            company: exp?.company ?? '',
+            startDate: exp?.startDate ?? '',
+            endDate: exp?.endDate ?? '',
+            description: exp?.description ?? '',
+          }))
+        : [],
+      education: Array.isArray(parsedData.education)
+        ? parsedData.education.map((edu, idx) => ({
+            id: edu?.id ?? `education-${idx + 1}`,
+            school: edu?.school ?? '',
+            degree: edu?.degree ?? '',
+            startDate: edu?.startDate ?? '',
+            endDate: edu?.endDate ?? '',
+          }))
+        : [],
+      skills: Array.isArray(parsedData.skills)
+        ? parsedData.skills.map((skill, idx) => ({
+            id: (skill as any)?.id ?? `skill-${idx + 1}`,
+            name: typeof skill === 'string' ? skill : (skill as any)?.name ?? '',
+          })).filter((skill) => skill.name)
+        : [],
+      projects: Array.isArray(parsedData.projects)
+        ? parsedData.projects.map((project, idx) => ({
+            id: project?.id ?? `project-${idx + 1}`,
+            title: project?.title ?? '',
+            context: project?.context ?? '',
+            role: project?.role ?? '',
+            description: project?.description ?? '',
+          }))
+        : [],
+    };
+
+  setCvData(nextCvData);
+
+  if (typeof onImported === 'function') {
+    try {
+      onImported();
+    } catch (e) {
+      console.warn('onImported callback threw', e);
+    }
+  }
+
+  return nextCvData;
   } catch (err) {
     console.error('Failed to parse LinkedIn HTML:', err);
     // Re-throw the error to be caught by toast.promise
@@ -68,8 +114,7 @@ async function parseLinkedInProfile(apiKey: string, file: File, setCvData: (data
 }
 
 
-export default function AIFeedPage() {
-  const { setCvData } = useCvData();
+export default function AIFeedPage({ setCvData, onImported }: AIFeedPageProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
   const { apiKey } = useContext(AppContext);
@@ -89,7 +134,8 @@ export default function AIFeedPage() {
       setIsLoading(true);
 
       // Pass the apiKey to the parsing function
-      const promise = parseLinkedInProfile(apiKey, file, setCvData);
+  // Pass onImported callback to switch to editor after import
+  const promise = parseLinkedInProfile(apiKey, file, setCvData, onImported);
 
       toast.promise(promise, {
         loading: t('ai_feed.parsing_linkedin'),

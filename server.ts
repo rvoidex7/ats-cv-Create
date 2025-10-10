@@ -65,7 +65,8 @@ async function parseLinkedInHandler(req: Request, res: Response) {
 
   const parsedData = await parseLinkedInHtmlWithGemini(apiKey, cleanedText, modelName);
 
-    console.log('[server] Successfully parsed data with Gemini.');
+  const preview = JSON.stringify(parsedData, null, 2);
+  console.log('[server] Successfully parsed data with Gemini. Preview of response:', preview.slice(0, 1000));
     return res.status(200).json(parsedData);
 
   } catch (error) {

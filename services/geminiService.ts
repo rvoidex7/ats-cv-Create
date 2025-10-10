@@ -129,6 +129,89 @@ const handleApiError = (error: any): string => {
     return `Could not connect to Gemini API. Details: ${message}`;
 };
 
+const toSafeString = (value: unknown): string => {
+    if (typeof value === 'string') return value.trim();
+    if (value == null) return '';
+    if (Array.isArray(value)) {
+        return value.map((v) => toSafeString(v)).filter(Boolean).join('\n');
+    }
+    return String(value);
+};
+
+const ensureId = (maybeId: unknown, prefix: string, index: number): string => {
+    const idCandidate = toSafeString(maybeId);
+    return idCandidate ? idCandidate : `${prefix}-${index + 1}`;
+};
+
+const normalizeCvData = (raw: any): Partial<CvData> => {
+    if (!raw || typeof raw !== 'object') {
+        return {};
+    }
+
+    const personalInfoSource = raw.personalInfo ?? {};
+    const personalInfo: PersonalInfo = {
+        name: toSafeString(personalInfoSource.name),
+        jobTitle: toSafeString(personalInfoSource.jobTitle ?? personalInfoSource.title ?? ''),
+        email: toSafeString(personalInfoSource.email),
+        phone: toSafeString(personalInfoSource.phone),
+        linkedin: toSafeString(personalInfoSource.linkedin),
+        github: toSafeString(personalInfoSource.github),
+        address: toSafeString(personalInfoSource.address ?? personalInfoSource.location ?? ''),
+    };
+
+    const experienceArray = Array.isArray(raw.experience) ? raw.experience : [];
+    const experience: Experience[] = experienceArray.map((item: any, index: number) => ({
+        id: ensureId(item?.id, 'experience', index),
+        jobTitle: toSafeString(item?.jobTitle ?? item?.title),
+        company: toSafeString(item?.company ?? item?.organization),
+        startDate: toSafeString(item?.startDate ?? item?.start ?? item?.start_time),
+        endDate: toSafeString(item?.endDate ?? item?.end ?? item?.end_time),
+        description: toSafeString(item?.description ?? item?.details ?? item?.bulletPoints),
+    })).filter((exp: Experience) => exp.jobTitle || exp.company || exp.description);
+
+    const educationArray = Array.isArray(raw.education) ? raw.education : [];
+    const education: Education[] = educationArray.map((item: any, index: number) => ({
+        id: ensureId(item?.id, 'education', index),
+        school: toSafeString(item?.school ?? item?.institution ?? item?.university),
+        degree: toSafeString(item?.degree ?? item?.qualification),
+        startDate: toSafeString(item?.startDate ?? item?.start),
+        endDate: toSafeString(item?.endDate ?? item?.end),
+    })).filter((edu: Education) => edu.school || edu.degree);
+
+    const skillsArray = Array.isArray(raw.skills) ? raw.skills : [];
+    const skills: Skill[] = skillsArray.map((item: any, index: number) => {
+        if (typeof item === 'string') {
+            return { id: `skill-${index + 1}`, name: toSafeString(item) };
+        }
+        return {
+            id: ensureId(item?.id, 'skill', index),
+            name: toSafeString(item?.name ?? item?.title ?? item?.value),
+        };
+    }).filter((skill: Skill) => skill.name);
+
+    const projectsArray = Array.isArray(raw.projects) ? raw.projects : [];
+    const projects: ProjectItem[] = projectsArray.map((item: any, index: number) => ({
+        id: ensureId(item?.id, 'project', index),
+        title: toSafeString(item?.title ?? item?.name),
+        context: toSafeString(item?.context ?? item?.summary),
+        role: toSafeString(item?.role ?? item?.position),
+        description: toSafeString(item?.description ?? item?.details),
+    })).filter((project: ProjectItem) => project.title || project.description || project.context);
+
+    const summary = toSafeString(raw.summary);
+
+    const normalized: Partial<CvData> = {
+        personalInfo,
+        summary,
+        experience,
+        education,
+        skills,
+        projects,
+    };
+
+    return normalized;
+};
+
 export const generateWithGemini = async (apiKey: string, prompt: string): Promise<string> => {
     if (!apiKey) {
         throw new Error("API Key not found.");
@@ -270,8 +353,8 @@ ${htmlContent}
         if (!jsonString) {
             throw new Error("Gemini returned an empty response.");
         }
-        const result = JSON.parse(jsonString);
-        return result as Partial<CvData>;
+    const result = JSON.parse(jsonString);
+    return normalizeCvData(result);
 
     } catch (error) {
         if (isQuotaError(error) && attempt < 2) {
@@ -362,8 +445,8 @@ export const analyzeCvWithGemini = async (apiKey: string, cvData: CvData, jobDes
         if (!jsonString) {
             throw new Error("Gemini returned an empty response.");
         }
-        const result = JSON.parse(jsonString);
-        return result as AtsAnalysisResult;
+    const result = JSON.parse(jsonString);
+    return result as AtsAnalysisResult;
     } catch (error) {
        throw new Error(handleApiError(error));
     }

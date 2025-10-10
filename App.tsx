@@ -75,7 +75,7 @@ const App: React.FC = () => {
       case 'ai-settings':
         return <AISettingsPage />;
       case 'ai-feed':
-        return <AIFeedPage />;
+        return <AIFeedPage setCvData={cvDataHook.setCvData} onImported={() => setActivePage('editor')} />;
       default:
         return <ComingSoonPage />;
     }
