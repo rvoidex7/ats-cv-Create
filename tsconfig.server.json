@@ -15,6 +15,6 @@
     "esModuleInterop": true,
     "outDir": "dist-server"
   },
-  "include": ["server.ts"],
+  "include": ["server.ts", "services/**/*.ts"],
   "exclude": ["node_modules", "jules-scratch"]
 }

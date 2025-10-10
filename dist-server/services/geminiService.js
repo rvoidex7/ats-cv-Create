@@ -1,84 +1,22 @@
 import { GoogleGenAI, Type } from "@google/genai";
-
-interface PersonalInfo {
-    name: string;
-    jobTitle: string;
-    email: string;
-    phone: string;
-    linkedin: string;
-    github: string;
-    address: string;
-}
-
-interface Experience {
-    id: string;
-    jobTitle: string;
-    company: string;
-    startDate: string;
-    endDate: string;
-    description: string;
-}
-
-interface Education {
-    id: string;
-    school: string;
-    degree: string;
-    startDate: string;
-    endDate: string;
-}
-
-interface Skill {
-    id: string;
-    name: string;
-}
-
-interface ProjectItem {
-    id: string;
-    title: string;
-    context?: string;
-    role: string;
-    description: string;
-}
-
-export interface CvData {
-    personalInfo: PersonalInfo;
-    summary: string;
-    experience: Experience[];
-    education: Education[];
-    skills: Skill[];
-    projects: ProjectItem[];
-}
-
-export interface AtsAnalysisResult {
-    matchScore: number;
-    summary: string;
-    matchingKeywords: string[];
-    missingKeywords: string[];
-    actionableFeedback: string[];
-}
-
 // Cache GoogleGenAI instances
-const geminiInstances = new Map<string, GoogleGenAI>();
-
-const getGeminiInstance = (apiKey: string): GoogleGenAI => {
+const geminiInstances = new Map();
+const getGeminiInstance = (apiKey) => {
     if (!geminiInstances.has(apiKey)) {
         geminiInstances.set(apiKey, new GoogleGenAI({ apiKey }));
     }
-    return geminiInstances.get(apiKey)!;
+    return geminiInstances.get(apiKey);
 };
-
-const isQuotaError = (error: any): boolean => {
+const isQuotaError = (error) => {
     const code = error?.status ?? error?.error?.code;
     const status = error?.error?.status;
     return code === 429 || status === 'RESOURCE_EXHAUSTED';
 };
-
-const extractRetryDelaySeconds = (error: any): number | null => {
+const extractRetryDelaySeconds = (error) => {
     const details = error?.error?.details;
     if (!Array.isArray(details)) {
         return null;
     }
-
     for (const detail of details) {
         if (detail?.['@type'] === 'type.googleapis.com/google.rpc.RetryInfo') {
             const retryDelay = detail.retryDelay;
@@ -87,7 +25,8 @@ const extractRetryDelaySeconds = (error: any): number | null => {
                 if (match) {
                     return parseFloat(match[1]);
                 }
-            } else if (typeof retryDelay === 'object' && retryDelay !== null) {
+            }
+            else if (typeof retryDelay === 'object' && retryDelay !== null) {
                 const seconds = Number(retryDelay.seconds ?? 0);
                 const nanos = Number(retryDelay.nanos ?? 0);
                 if (!Number.isNaN(seconds) || !Number.isNaN(nanos)) {
@@ -96,27 +35,20 @@ const extractRetryDelaySeconds = (error: any): number | null => {
             }
         }
     }
-
     return null;
 };
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const handleApiError = (error: any): string => {
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const handleApiError = (error) => {
     console.error("Gemini API Error:", error);
-
     const message = error?.error?.message ?? error?.message ?? String(error);
     const code = error?.status ?? error?.error?.code;
     const status = error?.error?.status;
-
     if (typeof message === 'string' && message.includes('API key not valid')) {
         return "The provided API Key appears to be invalid. Please double-check it in Settings.";
     }
-
     if (code === 401 || status === 'UNAUTHENTICATED') {
         return "Gemini rejected the request due to authentication. Please verify your API Key.";
     }
-
     if (isQuotaError(error)) {
         const retrySeconds = extractRetryDelaySeconds(error);
         if (retrySeconds) {
@@ -125,35 +57,28 @@ const handleApiError = (error: any): string => {
         }
         return "Gemini API quota limit reached. Please try again in a few seconds or upgrade your plan.";
     }
-
     return `Could not connect to Gemini API. Details: ${message}`;
 };
-
-export const generateWithGemini = async (apiKey: string, prompt: string): Promise<string> => {
+export const generateWithGemini = async (apiKey, prompt) => {
     if (!apiKey) {
         throw new Error("API Key not found.");
     }
-    
     try {
-                const ai = getGeminiInstance(apiKey);
-                const response: any = await ai.models.generateContent({
+        const ai = getGeminiInstance(apiKey);
+        const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
         });
-
-                const text = typeof response.text === 'function' ? response.text() : response.text;
-
+        const text = typeof response.text === 'function' ? response.text() : response.text;
         if (!text) {
-          throw new Error("Received an empty response from the API.");
+            throw new Error("Received an empty response from the API.");
         }
-        
         return text.trim();
-
-    } catch (error) {
-       throw new Error(handleApiError(error));
+    }
+    catch (error) {
+        throw new Error(handleApiError(error));
     }
 };
-
 const cvDataSchema = {
     type: Type.OBJECT,
     properties: {
@@ -225,18 +150,10 @@ const cvDataSchema = {
     },
     required: ['personalInfo', 'summary', 'experience', 'education', 'skills', 'projects']
 };
-
-
-export const parseLinkedInHtmlWithGemini = async (
-    apiKey: string,
-    htmlContent: string,
-    modelName = 'gemini-2.5-flash',
-    attempt = 0,
-): Promise<Partial<CvData>> => {
+export const parseLinkedInHtmlWithGemini = async (apiKey, htmlContent, modelName = 'gemini-2.5-flash', attempt = 0) => {
     if (!apiKey) {
         throw new Error("API Key not found.");
     }
-
     const prompt = `
 SCENARIO:
 You are an expert data conversion agent specializing in extracting structured data from unstructured HTML. Your task is to analyze the content of a complex LinkedIn profile HTML file and convert the essential CV information (Personal Info, Work Experience, Education, Projects, etc.) into a clean, structured JSON format.
@@ -253,10 +170,9 @@ Here is the HTML content to parse:
 ${htmlContent}
 """
     `;
-
     try {
         const ai = getGeminiInstance(apiKey);
-        const response: any = await ai.models.generateContent({
+        const response = await ai.models.generateContent({
             model: modelName,
             contents: prompt,
             config: {
@@ -264,16 +180,15 @@ ${htmlContent}
                 responseSchema: cvDataSchema,
             }
         });
-
         const rawText = typeof response.text === 'function' ? response.text() : response.text;
         const jsonString = rawText?.trim();
         if (!jsonString) {
             throw new Error("Gemini returned an empty response.");
         }
         const result = JSON.parse(jsonString);
-        return result as Partial<CvData>;
-
-    } catch (error) {
+        return result;
+    }
+    catch (error) {
         if (isQuotaError(error) && attempt < 2) {
             const retrySeconds = extractRetryDelaySeconds(error) ?? 12;
             const waitMs = Math.max(5, Math.ceil(retrySeconds)) * 1000;
@@ -281,11 +196,9 @@ ${htmlContent}
             await delay(waitMs);
             return parseLinkedInHtmlWithGemini(apiKey, htmlContent, modelName, attempt + 1);
         }
-
         throw new Error(handleApiError(error));
     }
 };
-
 const analysisSchema = {
     type: Type.OBJECT,
     properties: {
@@ -309,20 +222,16 @@ const analysisSchema = {
     },
     required: ['matchScore', 'summary', 'matchingKeywords', 'missingKeywords', 'actionableFeedback']
 };
-
-
-export const analyzeCvWithGemini = async (apiKey: string, cvData: CvData, jobDescription: string): Promise<AtsAnalysisResult> => {
+export const analyzeCvWithGemini = async (apiKey, cvData, jobDescription) => {
     if (!apiKey) {
         throw new Error("API Key not found.");
     }
-
     const cvDataString = JSON.stringify({
         summary: cvData.summary,
-    experience: cvData.experience.map((e: Experience) => ({ position: e.jobTitle, company: e.company, description: e.description })),
-    education: cvData.education.map((e: Education) => `${e.degree}, ${e.school}`),
-    skills: cvData.skills.map((s: Skill) => s.name)
+        experience: cvData.experience.map((e) => ({ position: e.jobTitle, company: e.company, description: e.description })),
+        education: cvData.education.map((e) => `${e.degree}, ${e.school}`),
+        skills: cvData.skills.map((s) => s.name)
     }, null, 2);
-
     const prompt = `
         You are an Application Tracking System (ATS) expert. Your task is to analyze a provided CV against a job description and provide a detailed report in a structured JSON format.
 
@@ -345,10 +254,9 @@ export const analyzeCvWithGemini = async (apiKey: string, cvData: CvData, jobDes
 
         Your entire response must be only the JSON object. Do not add any other text.
     `;
-
     try {
         const ai = getGeminiInstance(apiKey);
-        const response: any = await ai.models.generateContent({
+        const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
             config: {
@@ -356,15 +264,15 @@ export const analyzeCvWithGemini = async (apiKey: string, cvData: CvData, jobDes
                 responseSchema: analysisSchema,
             }
         });
-
         const rawText = typeof response.text === 'function' ? response.text() : response.text;
         const jsonString = rawText?.trim();
         if (!jsonString) {
             throw new Error("Gemini returned an empty response.");
         }
         const result = JSON.parse(jsonString);
-        return result as AtsAnalysisResult;
-    } catch (error) {
-       throw new Error(handleApiError(error));
+        return result;
+    }
+    catch (error) {
+        throw new Error(handleApiError(error));
     }
 };

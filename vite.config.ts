@@ -13,5 +13,12 @@ export default defineConfig({
     watch: {
       ignored: ["**/jules-scratch/**"],
     },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   },
 });

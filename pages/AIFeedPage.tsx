@@ -10,23 +10,28 @@ async function parseLinkedInProfile(apiKey: string, file: File, setCvData: (data
   try {
     const fileContent = await file.text();
 
-    const response = await fetch('http://localhost:3001/api/parse-linkedin', {
+    const response = await fetch('/api/parse-linkedin', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ html: fileContent }),
+      body: JSON.stringify({ 
+        html: fileContent,
+        apiKey: apiKey,
+        model: 'gemini-2.5-flash'
+      }),
     });
 
     if (!response.ok) {
       // Handle cases where the server fails without sending a JSON error body (e.g., timeout)
       const errorText = await response.text();
+      console.error('[parseLinkedInProfile] Server error response:', errorText);
       try {
         const errorData = JSON.parse(errorText);
         throw new Error(errorData.error || `Server responded with status ${response.status}`);
       } catch (e) {
         // If the response is not JSON, it might be an unhandled server error or timeout
-        throw new Error(`Server failed with status ${response.status}. The response was not valid JSON. This could be a timeout.`);
+        throw new Error(`Server error (${response.status}): ${errorText.substring(0, 200)}`);
       }
     }
 

@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run build:server && concurrently \"npm run start:backend\" \"vite\"",
     "start": "npm run start:backend",
     "start:frontend": "vite",
     "start:backend": "node dist-server/server.js",
@@ -14,6 +14,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/genai": "^1.23.0",
     "@google/generative-ai": "^0.12.0",
     "@headlessui/react": "^2.2.8",
     "@react-pdf/renderer": "^3.4.4",

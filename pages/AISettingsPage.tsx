@@ -3,23 +3,23 @@ import { useTranslation, Trans } from 'react-i18next';
 import { AppContext } from '../context/AppContext';
 import { generateWithGemini } from '../services/geminiService';
 
-const GEMINI_API_KEY_STORAGE_KEY = 'gemini_api_key';
+const GEMINI_API_KEY_STORAGE_KEY = 'gemini-api-key';
 
 const AISettingsPage: React.FC = () => {
   const { t } = useTranslation();
-  const { setSuccess, setError } = useContext(AppContext);
+  const { setSuccess, setError, setApiKey, apiKey } = useContext(AppContext);
 
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [isKeySaved, setIsKeySaved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const savedKey = localStorage.getItem(GEMINI_API_KEY_STORAGE_KEY);
+    const savedKey = apiKey || localStorage.getItem(GEMINI_API_KEY_STORAGE_KEY);
     if (savedKey) {
       setApiKeyInput('********************' + savedKey.slice(-4));
       setIsKeySaved(true);
     }
-  }, []);
+  }, [apiKey]);
 
   const handleSave = useCallback(async () => {
     if (!apiKeyInput) return;
@@ -30,7 +30,7 @@ const AISettingsPage: React.FC = () => {
     try {
       // Test the key with a simple prompt
       await generateWithGemini(apiKeyInput, "test");
-      localStorage.setItem(GEMINI_API_KEY_STORAGE_KEY, apiKeyInput);
+      setApiKey(apiKeyInput); // Use AppContext's setApiKey
       setIsKeySaved(true);
       setSuccess(t('ai_settings.key_saved_success'));
       setApiKeyInput('********************' + apiKeyInput.slice(-4));
@@ -40,14 +40,14 @@ const AISettingsPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [apiKeyInput, setSuccess, setError, t]);
+  }, [apiKeyInput, setSuccess, setError, setApiKey, t]);
 
   const handleDelete = useCallback(() => {
-    localStorage.removeItem(GEMINI_API_KEY_STORAGE_KEY);
+    setApiKey(null); // Use AppContext's setApiKey
     setIsKeySaved(false);
     setApiKeyInput('');
     setSuccess(t('ai_settings.key_deleted_success'));
-  }, [setSuccess, t]);
+  }, [setSuccess, setApiKey, t]);
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-md space-y-6 dark:bg-gray-800 animate-fade-in">
