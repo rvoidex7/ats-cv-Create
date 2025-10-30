@@ -73,3 +73,5 @@ Uygulama varsayılan olarak `http://localhost:5173` adresinde çalışmaya başl
 ### Bu uygulamanın özgür yazlım olarak varlığını sürdürebilmesi ve güncellemelerini alabilmesi adına geliştiricilerin bağış linklerini buradan bulabilirsiniz.
 
 <a href="https://www.buymeacoffee.com/ru1vly" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+<a href="https://buymeacoffee.com/ykpkrmzcn53" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
