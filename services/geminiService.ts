@@ -212,28 +212,41 @@ const normalizeCvData = (raw: any): Partial<CvData> => {
     return normalized;
 };
 
-export const generateWithGemini = async (apiKey: string, prompt: string): Promise<string> => {
+export const generateWithGemini = async (
+    apiKey: string,
+    prompt: string,
+    attempt = 0
+): Promise<string> => {
     if (!apiKey) {
         throw new Error("API Key not found.");
     }
-    
+
     try {
-                const ai = getGeminiInstance(apiKey);
-                const response: any = await ai.models.generateContent({
+        const ai = getGeminiInstance(apiKey);
+        const response: any = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
         });
 
-                const text = typeof response.text === 'function' ? response.text() : response.text;
+        const text = typeof response.text === 'function' ? response.text() : response.text;
 
         if (!text) {
-          throw new Error("Received an empty response from the API.");
+            throw new Error("Received an empty response from the API.");
         }
-        
+
         return text.trim();
 
     } catch (error) {
-       throw new Error(handleApiError(error));
+        // Retry on quota errors
+        if (isQuotaError(error) && attempt < 2) {
+            const retrySeconds = extractRetryDelaySeconds(error) ?? 12;
+            const waitMs = Math.max(5, Math.ceil(retrySeconds)) * 1000;
+            console.warn(`[Gemini] Quota hit. Retrying in ${waitMs}ms (attempt ${attempt + 1}).`);
+            await delay(waitMs);
+            return generateWithGemini(apiKey, prompt, attempt + 1);
+        }
+
+        throw new Error(handleApiError(error));
     }
 };
 
@@ -394,16 +407,21 @@ const analysisSchema = {
 };
 
 
-export const analyzeCvWithGemini = async (apiKey: string, cvData: CvData, jobDescription: string): Promise<AtsAnalysisResult> => {
+export const analyzeCvWithGemini = async (
+    apiKey: string,
+    cvData: CvData,
+    jobDescription: string,
+    attempt = 0
+): Promise<AtsAnalysisResult> => {
     if (!apiKey) {
         throw new Error("API Key not found.");
     }
 
     const cvDataString = JSON.stringify({
         summary: cvData.summary,
-    experience: cvData.experience.map((e: Experience) => ({ position: e.jobTitle, company: e.company, description: e.description })),
-    education: cvData.education.map((e: Education) => `${e.degree}, ${e.school}`),
-    skills: cvData.skills.map((s: Skill) => s.name)
+        experience: cvData.experience.map((e: Experience) => ({ position: e.jobTitle, company: e.company, description: e.description })),
+        education: cvData.education.map((e: Education) => `${e.degree}, ${e.school}`),
+        skills: cvData.skills.map((s: Skill) => s.name)
     }, null, 2);
 
     const prompt = `
@@ -445,9 +463,18 @@ export const analyzeCvWithGemini = async (apiKey: string, cvData: CvData, jobDes
         if (!jsonString) {
             throw new Error("Gemini returned an empty response.");
         }
-    const result = JSON.parse(jsonString);
-    return result as AtsAnalysisResult;
+        const result = JSON.parse(jsonString);
+        return result as AtsAnalysisResult;
     } catch (error) {
-       throw new Error(handleApiError(error));
+        // Retry on quota errors
+        if (isQuotaError(error) && attempt < 2) {
+            const retrySeconds = extractRetryDelaySeconds(error) ?? 12;
+            const waitMs = Math.max(5, Math.ceil(retrySeconds)) * 1000;
+            console.warn(`[Gemini] Quota hit. Retrying in ${waitMs}ms (attempt ${attempt + 1}).`);
+            await delay(waitMs);
+            return analyzeCvWithGemini(apiKey, cvData, jobDescription, attempt + 1);
+        }
+
+        throw new Error(handleApiError(error));
     }
 };
