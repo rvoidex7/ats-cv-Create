@@ -133,7 +133,7 @@ const normalizeCvData = (raw) => {
     };
     return normalized;
 };
-export const generateWithGemini = async (apiKey, prompt) => {
+export const generateWithGemini = async (apiKey, prompt, attempt = 0) => {
     if (!apiKey) {
         throw new Error("API Key not found.");
     }
@@ -150,6 +150,14 @@ export const generateWithGemini = async (apiKey, prompt) => {
         return text.trim();
     }
     catch (error) {
+        // Retry on quota errors
+        if (isQuotaError(error) && attempt < 2) {
+            const retrySeconds = extractRetryDelaySeconds(error) ?? 12;
+            const waitMs = Math.max(5, Math.ceil(retrySeconds)) * 1000;
+            console.warn(`[Gemini] Quota hit. Retrying in ${waitMs}ms (attempt ${attempt + 1}).`);
+            await delay(waitMs);
+            return generateWithGemini(apiKey, prompt, attempt + 1);
+        }
         throw new Error(handleApiError(error));
     }
 };
@@ -296,7 +304,7 @@ const analysisSchema = {
     },
     required: ['matchScore', 'summary', 'matchingKeywords', 'missingKeywords', 'actionableFeedback']
 };
-export const analyzeCvWithGemini = async (apiKey, cvData, jobDescription) => {
+export const analyzeCvWithGemini = async (apiKey, cvData, jobDescription, attempt = 0) => {
     if (!apiKey) {
         throw new Error("API Key not found.");
     }
@@ -347,6 +355,14 @@ export const analyzeCvWithGemini = async (apiKey, cvData, jobDescription) => {
         return result;
     }
     catch (error) {
+        // Retry on quota errors
+        if (isQuotaError(error) && attempt < 2) {
+            const retrySeconds = extractRetryDelaySeconds(error) ?? 12;
+            const waitMs = Math.max(5, Math.ceil(retrySeconds)) * 1000;
+            console.warn(`[Gemini] Quota hit. Retrying in ${waitMs}ms (attempt ${attempt + 1}).`);
+            await delay(waitMs);
+            return analyzeCvWithGemini(apiKey, cvData, jobDescription, attempt + 1);
+        }
         throw new Error(handleApiError(error));
     }
 };

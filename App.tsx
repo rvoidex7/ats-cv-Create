@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import CvPreview from './components/CvPreview';
 import { useCvData } from './hooks/useCvData';
 import { BrandIcon, AnalysisIcon, PrintIcon, DownloadIcon } from './components/IconComponents';
@@ -11,6 +12,7 @@ import AISettingsPage from './pages/AISettingsPage';
 import AIFeedPage from './pages/AIFeedPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import CvPdf from './components/CvPdf';
+import { validateCvForExport, validatePersonalInfo } from './utils/validation';
 
 const App: React.FC = () => {
   const { t } = useTranslation();
@@ -46,17 +48,44 @@ const App: React.FC = () => {
   };
 
   const handleExportPdf = async () => {
+    // Validate CV data before export
+    const validation = validateCvForExport(cvData);
+
+    if (!validation.isValid) {
+      toast.error('Cannot export CV', {
+        description: validation.errors.join('\n'),
+      });
+      return;
+    }
+
+    // Validate personal info fields
+    const personalInfoErrors = validatePersonalInfo(cvData.personalInfo);
+    if (Object.keys(personalInfoErrors).length > 0) {
+      const errorMessages = Object.entries(personalInfoErrors)
+        .map(([field, error]) => `${field}: ${error}`)
+        .join('\n');
+
+      toast.error('Invalid personal information', {
+        description: errorMessages,
+      });
+      return;
+    }
+
     try {
       const { pdf } = await import('@react-pdf/renderer');
       const blob = await pdf(<CvPdf cvData={cvData} t={t} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `cv-${new Date().toISOString().split('T')[0]}.pdf`;
+      const fileName = `${cvData.personalInfo.name.replace(/\s+/g, '_')}_CV_${new Date().toISOString().split('T')[0]}.pdf`;
+      link.download = fileName;
       link.click();
       URL.revokeObjectURL(url);
+      toast.success('PDF exported successfully!');
     } catch (err) {
-      alert(`Error creating PDF: ${(err as Error).message}`);
+      toast.error('Error creating PDF', {
+        description: (err as Error).message,
+      });
     }
   };
 

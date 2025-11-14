@@ -95,8 +95,20 @@ const CvPdf: React.FC<CvPdfProps> = ({ cvData, t }) => {
   const projHeader = (p: {title:string; context?:string; role:string}) =>
     `${p.title}${p.context ? ` (${p.context})` : ''} | ${p.role}`;
 
+  // Create metadata for ATS compatibility
+  const pdfTitle = `${personalInfo.name} - ${personalInfo.jobTitle}`;
+  const pdfKeywords = skills.map(s => s.name).join(', ');
+  const pdfSubject = `Resume/CV for ${personalInfo.name}`;
+
   return (
-    <Document>
+    <Document
+      title={pdfTitle}
+      author={personalInfo.name}
+      subject={pdfSubject}
+      keywords={pdfKeywords}
+      creator="ATS-Compatible CV Creator"
+      producer="ATS-Compatible CV Creator"
+    >
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.header}>

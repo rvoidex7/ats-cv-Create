@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type CvData, type CvSection, type PersonalInfo, type Experience, type Education, type Skill, type ProjectItem } from '../types';
 import { INITIAL_CV_DATA_EN, INITIAL_CV_DATA_TR } from '../constants';
+import { useDebounce } from './useDebounce';
 
 const CV_DATA_STORAGE_KEY = 'cv-data';
 
@@ -35,6 +36,9 @@ export const useCvData = () => {
   const { i18n } = useTranslation();
   const [cvData, setCvDataInternal] = useState<CvData>(() => loadCvDataFromStorage(i18n.language));
   const previousLangRef = useRef(i18n.language);
+
+  // Debounce CV data to avoid excessive localStorage writes
+  const debouncedCvData = useDebounce(cvData, 300);
 
   // Update CV data with new initial values on language change
   useEffect(() => {
@@ -73,14 +77,14 @@ export const useCvData = () => {
   }, [i18n.language]);
 
 
-  // Save CV data to localStorage whenever it changes
+  // Save CV data to localStorage whenever it changes (debounced to avoid excessive writes)
   useEffect(() => {
     try {
-      localStorage.setItem(CV_DATA_STORAGE_KEY, JSON.stringify(cvData));
+      localStorage.setItem(CV_DATA_STORAGE_KEY, JSON.stringify(debouncedCvData));
     } catch (error) {
       console.error('Error saving CV data to localStorage:', error);
     }
-  }, [cvData]);
+  }, [debouncedCvData]);
 
   const setCvData = (newData: CvData | ((prev: CvData) => CvData)) => {
     setCvDataInternal(newData);
