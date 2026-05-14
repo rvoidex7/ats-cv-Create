@@ -39,9 +39,8 @@ export default async function handler(
 
   } catch (error) {
     console.error('[API /parse-linkedin] An error occurred during the process.', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     return res.status(500).json({
-      error: `An error occurred during parsing: ${errorMessage}`,
+      error: 'An internal server error occurred during parsing. Please try again later.',
     });
   }
 }

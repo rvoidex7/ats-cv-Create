@@ -118,9 +118,8 @@ async function parseLinkedInHandler(req: Request, res: Response) {
 
   } catch (error) {
     console.error('[server] An error occurred during the process:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     return res.status(500).json({
-      error: `An error occurred during parsing: ${errorMessage}`,
+      error: 'An internal server error occurred during parsing. Please try again later.',
     });
   }
 }
@@ -190,9 +189,8 @@ app.post('/api/parse-linkedin-pdf', async (req: Request, res: Response) => {
 
   } catch (error) {
     console.error('[server] An error occurred during PDF parsing:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     return res.status(500).json({
-      error: `An error occurred during PDF parsing: ${errorMessage}`,
+      error: 'An internal server error occurred during PDF parsing. Please try again later.',
     });
   }
 });
